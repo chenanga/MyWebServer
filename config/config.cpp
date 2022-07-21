@@ -9,7 +9,7 @@ Config::Config(){
     m_LOGWrite = 0;
 
     //触发组合模式,默认listenfd LT + connfd LT
-    m_TRIGMode = 0;
+    m_TriggerMode = 0;
 
     //优雅关闭链接，默认不使用
     m_OPT_LINGER = 0;

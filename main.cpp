@@ -23,13 +23,22 @@ const int MAX_EVENT_NUMBER = 20000; //最大事件数
 
 int main(int argc, char * argv[]) {
 
-    if (argc <= 1) {
-        std::cout << "按照如下格式运行：" << basename(argv[0]) << "port_number\n" << std::endl;
+//    if (argc <= 1) {
+//        std::cout << "按照如下格式运行：" << basename(argv[0]) << "port_number\n" << std::endl;
+//        exit(-1);
+//    }
+
+    // 获取当前工作路径
+    char* cur_dir;
+    if ((cur_dir = getcwd(NULL, 0)) == NULL) {
+        perror("getcwd error");
         exit(-1);
     }
+    std::string str_cur_dir = cur_dir;
+
 
     // 配置文件解析
-    std::string config_file_path = "./config.yaml";
+    std::string config_file_path = str_cur_dir + "/config.yaml";
     Config config;
     config.loadconfig(config_file_path);
 
@@ -39,9 +48,10 @@ int main(int argc, char * argv[]) {
     // 创建线程池，初始化
     Thread_pool<Http_conn> * pool = nullptr;
     try{
-        pool = new Thread_pool<Http_conn>;
+        pool = new Thread_pool<Http_conn>();
     }
     catch(...) {
+
         exit(-1);
     }
 
@@ -62,11 +72,18 @@ int main(int argc, char * argv[]) {
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(config.m_PORT);
     ret = bind(listen_fd, (struct sockaddr*)&address, sizeof(address));
-    assert(ret >= 0);
+    if (ret == -1) {
+        perror("bind");
+        exit(-1);
+    }
 
     // 监听
     ret = listen(listen_fd, 5);
-    assert(ret >= 0);
+    if (ret == -1) {
+        perror("listen");
+        exit(-1);
+    }
+
 
     // 创建epoll对象，事件数组，添加
     epoll_event events[MAX_EVENT_NUMBER];
@@ -85,7 +102,49 @@ int main(int argc, char * argv[]) {
         }
 
         // 循环遍历事件数组
-    }
+        for (int i = 0; i < num; ++ i) {
+            int sock_fd = events[i].data.fd;
+            if (sock_fd == listen_fd) {
+                // 有客户端连接
+                struct sockaddr_in client_address;
+                socklen_t client_address_len = sizeof(client_address);
+                int conn_fd = accept(listen_fd, (struct sockaddr *)&client_address, &client_address_len);
+                if (Http_conn::m_user_count >= MAX_FD) {
+                    // 目前连接数满了，给客户端写一个信息，服务器内部正忙
+                    // send message   todo
+                    close(conn_fd);
+                    continue;
+                }
 
+                // 将新的客户数据初始化，放入数组
+                users[conn_fd].init(conn_fd, client_address, config.m_TriggerMode);
+            }
+            else if (events[i].events & (EPOLLRDHUP | EPOLLHUP | EPOLLERR)) {
+                // 对方异常断开或者错误等事件
+                users[sock_fd].close_conn();
+            }
+            else if (events[i].events & EPOLLIN) {  // 读事件
+                //
+                if (users[sock_fd].read()) {
+                    // 一次性读取完所以数据
+                    pool->append(users + sock_fd);  // 交给工作线程
+                }
+                else  // 读取失败
+                    users[sock_fd].close_conn();
+
+            }
+            else if (events[i].events & EPOLLOUT) {  // 写事件
+                if (!users[sock_fd].write()) {  // 一次性写完所有数据
+                    // 失败了，关闭连接
+                    users[sock_fd].close_conn();
+                }
+            }
+        }
+    }
+    close(epoll_fd);
+    close(listen_fd);
+    delete[] users;
+    delete pool;
+    free(cur_dir);
     return 0;
 }

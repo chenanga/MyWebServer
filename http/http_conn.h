@@ -22,8 +22,10 @@
 #include <sys/wait.h>
 #include <sys/uio.h>
 #include <map>
+#include <iostream>
 
-
+#include "../utils/utils.h"
+#include "../pool/threadpool.h"
 class Http_conn {
 public:
 
@@ -35,10 +37,15 @@ public:
 
 
     void process();  // 响应以及处理客户端请求
+    void init(int sock_fd, const sockaddr_in & address, int trigger_mode);  // 初始化接受新的连接
+    void close_conn();  // 关闭连接
 
+    bool read();  // 非阻塞的读
+    bool write();  // 非阻塞的写
 
 private:
     int m_sock_fd;  // 该http连接的socket
+    int m_trigger_mode;  // 触发组合模式
     sockaddr_in m_address;  // 通信的socket地址
 
 };

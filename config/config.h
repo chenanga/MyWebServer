@@ -40,9 +40,9 @@ public:
     int m_actor_model;
 
     //需要修改的数据库信息,登录名,密码,库名
-    string m_sql_user;
-    string m_sql_passwd;
-    string m_sql_databasename;
+    std::string m_sql_user;
+    std::string m_sql_passwd;
+    std::string m_sql_databasename;
 };
 
 #endif //MYWEB_CONFIG_H

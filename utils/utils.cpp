@@ -11,6 +11,13 @@ void addSig(int sig, void(handler)(int)) {
 
 }
 
+// 设置文件描述符非阻塞
+void setNoneBlocking(int fd) {
+    int old_flag = fcntl(fd, F_GETFL);
+    int new_flag = old_flag | O_NONBLOCK;
+    fcntl(fd, F_SETFL, new_flag);
+}
+
 // 添加文件描述符到epoll中, mode: 0, LT模式  1, ET模式
 void addFd(int epoll_fd, int fd, bool one_shot, int mode) {
     epoll_event event;
@@ -25,7 +32,7 @@ void addFd(int epoll_fd, int fd, bool one_shot, int mode) {
         event.events |= EPOLLONESHOT;
 
     epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &event);
-//    setnonblocking(fd);
+    setNoneBlocking(fd);  // 设置文件描述符非阻塞
 }
 
 //从内核时间表删除描述符
@@ -49,3 +56,5 @@ void modFd(int epoll_fd, int fd, int ev, int mode) {
     epoll_ctl(epoll_fd, EPOLL_CTL_MOD, fd, &event);
 
 }
+
+//

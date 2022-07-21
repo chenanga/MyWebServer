@@ -7,7 +7,7 @@
 #include <cstring>
 #include <sys/epoll.h>
 #include <unistd.h>
-
+#include <fcntl.h>
 
 
 // 添加信号捕捉
@@ -21,5 +21,8 @@ void removeFd(int epollfd, int fd);
 
 // 修改文件描述符, mode: 0, LT模式  1, ET模式
 void modFd(int epollfd, int fd, int ev, int mode);
+
+void setNoneBlocking(int fd);  // 设置文件描述符非阻塞
+
 
 #endif //MYWEB_UTILS_H
