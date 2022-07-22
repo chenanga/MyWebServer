@@ -5,6 +5,7 @@
 #include <cstring>
 #include <iostream>
 #include <map>
+#include <sys/types.h>
 #include <sys/stat.h>  // stat
 #include <fcntl.h>  // iovec
 #include <unistd.h>
@@ -25,7 +26,8 @@ public:
     void init();  // 初始化一些信息
     void init(char *read_buf, int read_idx, struct stat * file_stat, char ** file_address);
     HTTP_CODE parse_request();  // 解析http请求
-
+    inline bool get_m_linger() const { return m_linger; };  // 是http_conn获取解析后的m_linger
+    inline char * get_m_real_file() { return m_real_file; }
 private:
     inline char * get_line() { return m_read_buf + m_start_line; };  // 内联函数, 执行速度更快
 
@@ -48,8 +50,8 @@ private:
     char * m_version; // 协议版本，支持 HTTP1.1
     METHOD m_method; // 请求方法
     char * m_host; // 主机名
-    bool m_linger; // 判断http请求是否要保持连接
     int m_content_length; //HTTP请求的消息总长度
+    bool m_linger; // 判断http请求是否要保持连接
 
     bool m_ispost;  // 是否为post请求
     char *m_string; // 储存请求数据部分

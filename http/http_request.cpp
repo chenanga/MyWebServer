@@ -58,7 +58,6 @@ HTTP_CODE HttpRequest::parse_request() {
         // m_checked_idx表示从状态机在m_read_buf中读取的位置
         // m_start_line是每一个数据行在m_read_buf中的起始位置
         m_start_line = m_checked_idx;
-        std::cout << "got 1 http line : %s" << text << std::endl;
 
         switch (m_check_state) {
             case CHECK_STATE_REQUESTLINE: {
@@ -174,7 +173,7 @@ HTTP_CODE HttpRequest::parse_request_line(char *text) {
 
     // 如果直接访问ip:端口/，则跳转到初始界面,即当url为/时，显示欢迎界面
     if (strlen(m_url) == 1)
-        strcat(m_url, "judge.html");
+        strcat(m_url, "index.html");
     m_check_state = CHECK_STATE_HEADER; // 主状态机检查状态变成请求头
 
     return NO_REQUEST;
@@ -220,7 +219,7 @@ HTTP_CODE HttpRequest::parse_request_headers(char *text) {
     }
 
     else {
-        std::cout << "oop! unknow header: " << text << std::endl;
+//        std::cout << "oop! unknow header: " << text << std::endl;
     }
     return NO_REQUEST;
 }
@@ -356,8 +355,9 @@ HTTP_CODE HttpRequest::do_request() {
 
         free(m_url_real);
     }
-    else  // 默认界面
+    else  { // 默认界面
         strncpy(m_real_file + len, m_url, FILENAME_LEN - len - 1);
+    }
 
     // 获取m_real_file文件的相关的状态信息，-1失败，0成功
     if (stat(m_real_file, m_file_stat) < 0)
@@ -372,10 +372,7 @@ HTTP_CODE HttpRequest::do_request() {
         return BAD_REQUEST;
 
 
-    // todo 以下这个打开文件操作 这个迁移到response中，
-    int fd = open(m_real_file, O_RDONLY);
-    *m_file_address = (char *)mmap(0, (*m_file_stat).st_size, PROT_READ, MAP_PRIVATE, fd, 0);
-    close(fd);
+
     return FILE_REQUEST;
 }
 

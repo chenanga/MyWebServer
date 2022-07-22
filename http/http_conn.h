@@ -56,7 +56,7 @@ private:
 
     char m_read_buf[READ_BUFFER_SIZE];  // 存储读取的请求报文数据
     int m_read_idx;  // 缓冲区中m_read_buf中数据的最后一个字节的下一个位置
-
+    bool m_linger; // 判断http请求是否要保持连接
     char m_write_buf[WRITE_BUFFER_SIZE];  // 写缓冲区
     int m_write_idx;                        // 写缓冲区中待发送的字节数
 
@@ -67,7 +67,7 @@ private:
     char* m_file_address;        // 客户请求的目标文件被mmap到内存中的起始位置
 
     struct iovec m_iv[2];        // 我们将采用writev来执行写操作，所以定义下面两个成员，其中m_iv_count表示被写内存块的数量。
-
+    int m_iv_count;  // 使用的块数
     HttpRequest m_http_request;  // 解析请求内容
     HttpResponse m_http_response;  // 生成响应
 
@@ -75,6 +75,7 @@ private:
     void unmap();  // 释放内存映射
 
 };
+
 
 
 #endif //MYWEB_HTTP_CONN_H
