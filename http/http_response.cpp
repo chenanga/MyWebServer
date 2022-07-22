@@ -25,18 +25,18 @@ bool HttpResponse::generate_response(HTTP_CODE read_ret, int &bytes_to_send,
     {
         //内部错误，500
         case INTERNAL_ERROR:
-            add_status_line( 500, error_500_title );
-            add_headers( strlen( error_500_form ) );
-            if ( ! add_content( error_500_form ) ) {
+            add_status_line(500, error_500_title);
+            add_headers(strlen(error_500_form));
+            if (!add_content(error_500_form)) {
                 return false;
             }
             break;
 
 
         case BAD_REQUEST:
-            add_status_line( 400, error_400_title );
-            add_headers( strlen( error_400_form ) );
-            if ( ! add_content( error_400_form ) ) {
+            add_status_line(400, error_400_title);
+            add_headers(strlen(error_400_form));
+            if (!add_content(error_400_form)) {
                 return false;
             }
             break;
@@ -44,25 +44,25 @@ bool HttpResponse::generate_response(HTTP_CODE read_ret, int &bytes_to_send,
             //报文语法有误，404
 
         case NO_RESOURCE:
-            add_status_line( 404, error_404_title );
-            add_headers( strlen( error_404_form ) );
-            if ( ! add_content( error_404_form ) ) {
+            add_status_line(404, error_404_title);
+            add_headers(strlen(error_404_form));
+            if (!add_content(error_404_form)) {
                 return false;
             }
             break;
 
             //资源没有访问权限，403
         case FORBIDDEN_REQUEST:
-            add_status_line( 403, error_403_title );
-            add_headers(strlen( error_403_form));
-            if ( ! add_content( error_403_form ) ) {
+            add_status_line(403, error_403_title);
+            add_headers(strlen(error_403_form));
+            if (!add_content(error_403_form)) {
                 return false;
             }
             break;
 
             //文件存在，200
         case FILE_REQUEST:
-            add_status_line(200, ok_200_title );
+            add_status_line(200, ok_200_title);
 
             // 如果请求的文件不为空
             if (m_file_stat.st_size!=0) {

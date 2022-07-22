@@ -110,6 +110,10 @@ int main(int argc, char * argv[]) {
                 struct sockaddr_in client_address;
                 socklen_t client_address_len = sizeof(client_address);
                 int conn_fd = accept(listen_fd, (struct sockaddr *)&client_address, &client_address_len);
+                if ( conn_fd < 0 ) {
+                    std::cout << "errno is: " << errno << std::endl;
+                    continue;
+                }
                 if (HttpConn::m_user_count >= MAX_FD) {
                     // 目前连接数满了，给客户端写一个信息，服务器内部正忙
                     // send message   todo

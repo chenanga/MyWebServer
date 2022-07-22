@@ -17,8 +17,8 @@ void HttpRequest::init() {
     m_check_state = CHECK_STATE_REQUESTLINE;  // 初始化状态为请求首行
     m_checked_idx = 0;
     m_start_line = 0;
-    m_url = 0;  // todo 如果正常后，试试吧0换成nullptr
-    m_version = 0;
+    m_url = nullptr;  // todo 如果正常后，试试吧0换成nullptr
+    m_version = nullptr;
     m_method = GET;
     m_linger = false;
     m_ispost = false;
@@ -38,7 +38,7 @@ HTTP_CODE HttpRequest::parse_request() {
     //初始化从状态机状态、HTTP请求解析结果
     LINE_STATUS line_status = LINE_OK;
     HTTP_CODE ret = NO_REQUEST;
-    char * text = 0;
+    char * text = nullptr;
 
     /*
     在GET请求报文中，每一行都是\r\n作为结束，所以对报文进行拆解时，仅用从状态机的状态line_status=parse_line())==LINE_OK语句即可。
@@ -54,7 +54,7 @@ HTTP_CODE HttpRequest::parse_request() {
            || ((line_status = parse_line()) == LINE_OK)) {
 
         text = get_line();  // 获取一行数据
-
+        std::cout << "got 1 http line : " << text << std::endl;
         // m_checked_idx表示从状态机在m_read_buf中读取的位置
         // m_start_line是每一个数据行在m_read_buf中的起始位置
         m_start_line = m_checked_idx;
@@ -69,7 +69,7 @@ HTTP_CODE HttpRequest::parse_request() {
 
             case CHECK_STATE_HEADER: {
                 ret = parse_request_headers(text);  //解析请求头
-                if (ret == BAD_REQUEST)
+                if (ret == BAD_REQUEST)  // 目前这个if条件始终无法为真，因为parse_request_headers所有的返回情况没有返回BAD_REQUEST
                     return BAD_REQUEST;
 
                 else if (ret == GET_REQUEST) {    //完整解析GET请求后，跳转到报文响应函数

@@ -80,7 +80,7 @@ bool HttpConn::read() {
         m_read_idx += bytes_read;
 
     }
-    std::cout << "got a request ：" << m_read_buf << std::endl;
+//    std::cout << "got a request ：" << m_read_buf << std::endl;
     return true;
 }
 
