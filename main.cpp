@@ -9,12 +9,11 @@
 #include <sys/epoll.h>
 #include <csignal>
 #include <cassert>
-
 #include "pool/threadpool.h"
 #include "config/config.h"
 #include "http/http_conn.h"
 #include "utils/utils.h"
-
+#include "global/global.h"
 
 const int MAX_FD = 65536;  //最大文件描述符
 const int MAX_EVENT_NUMBER = 20000; //最大事件数
@@ -34,21 +33,23 @@ int main(int argc, char * argv[]) {
         perror("getcwd error");
         exit(-1);
     }
-    std::string str_cur_dir = cur_dir;
+    g_str_cur_dir = cur_dir;
 
 
     // 配置文件解析
-    std::string config_file_path = str_cur_dir + "/config.yaml";
+    std::string config_file_path = g_str_cur_dir + "/config.yaml";
     Config config;
     config.loadconfig(config_file_path);
+
+    std::cout << "浏览器端按照 ip:" << config.m_PORT << " 方式运行，例如 http://192.168.184.132:10000/" << std::endl;
 
     // 处理 SIGPIPE 信号
     addSig(SIGPIPE, SIG_IGN);
 
     // 创建线程池，初始化
-    Thread_pool<Http_conn> * pool = nullptr;
+    ThreadPool<HttpConn> * pool = nullptr;
     try{
-        pool = new Thread_pool<Http_conn>();
+        pool = new ThreadPool<HttpConn>();
     }
     catch(...) {
 
@@ -56,7 +57,7 @@ int main(int argc, char * argv[]) {
     }
 
     // 创建一个数组用于保存所有的客户端信息
-    Http_conn * users = new Http_conn[MAX_FD];
+    HttpConn * users = new HttpConn[MAX_FD];
 
     //
     int listen_fd = socket(PF_INET, SOCK_STREAM, 0);
@@ -91,7 +92,7 @@ int main(int argc, char * argv[]) {
 
     // 将监听的文件描述符添加到epoll对象中
     addFd(epoll_fd, listen_fd, false, config.m_TriggerMode);
-    Http_conn::m_epoll_fd = epoll_fd;
+    HttpConn::m_epoll_fd = epoll_fd;
 
     while (true) {
         int num = epoll_wait(epoll_fd, events, MAX_EVENT_NUMBER, -1);
@@ -109,7 +110,7 @@ int main(int argc, char * argv[]) {
                 struct sockaddr_in client_address;
                 socklen_t client_address_len = sizeof(client_address);
                 int conn_fd = accept(listen_fd, (struct sockaddr *)&client_address, &client_address_len);
-                if (Http_conn::m_user_count >= MAX_FD) {
+                if (HttpConn::m_user_count >= MAX_FD) {
                     // 目前连接数满了，给客户端写一个信息，服务器内部正忙
                     // send message   todo
                     close(conn_fd);

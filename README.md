@@ -1,4 +1,4 @@
-#chenWeb
+# chenWeb
 ## 项目描述
 Linux下C++轻量级Web服务器，基于非阻塞I/O和模拟Proactor事件处理模式的高并发服务器，支持解析GET、POST请求，能够响应静态资源的请求。
  
@@ -134,7 +134,20 @@ chenWeb/
 |-- README.md
 ```
 
-## 参考
+## 测试
+
+## TODO
+1、http解析使用正则表达式
+
+2、上传/下载文件
+
+3、解析更多的http头部字段
+
+4、加入cookie或者session验证
+
+5、密码MD5加密
+
+
+## 致谢
 1. [Github jbeder/yaml-cpp](https://github.com/jbeder/yaml-cpp)
 
-## 测试
