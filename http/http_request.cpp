@@ -241,130 +241,131 @@ HTTP_CODE HttpRequest::do_request() {
     int len = strlen(std::string (g_str_cur_dir + "/resources").c_str());
     const char *p = strrchr(m_url, '/');
 
+    //处理post请求 且是登录或者注册
+    if (m_ispost == 1 && (*(p + 1) == '2' || *(p + 1) == '3')) {
 
-    if (m_ispost == 0) {
+        char *m_url_real = (char *)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/");
+        strcat(m_url_real, m_url + 2);
+        strncpy(m_real_file + len, m_url_real, FILENAME_LEN - len - 1);
+        free(m_url_real);
 
-        // 访问index.html界面
-        if (*(p + 1) == '4') {
-            char *m_url_real = (char *)malloc(sizeof(char) * 200);
-            strcpy(m_url_real, "/index.html");
-            strncpy(m_real_file + len, m_url_real, strlen(m_url_real));  //拼接路径
-            free(m_url_real);
-        }
+        //将用户名和密码提取出来
+        //user=abcd&password=asdasd
+        char name[100], password[100];
+        int name_index;
+        for (name_index = 5; m_string[name_index] != '&'; ++ name_index)
+            name[name_index - 5] = m_string[name_index];
+        name[name_index - 5] = '\0';
 
-        // 访问注册界面
-        else if (*(p + 1) == '0') {
-            char *m_url_real = (char *)malloc(sizeof(char) * 200);
-            strcpy(m_url_real, "/register.html");
-            strncpy(m_real_file + len, m_url_real, strlen(m_url_real));  //拼接路径
-            free(m_url_real);
-        }
+        int passwd_index = 0;        // 此时i在&这里，加10刚好到密码的第一个字符
+        for (name_index = name_index + 10; m_string[name_index] != '\0'; ++ name_index, ++ passwd_index)
+            password[passwd_index] = m_string[name_index];
+        password[passwd_index] = '\0';
 
-        // 访问登录界面
-        else if (*(p + 1) == '1') {
-            char *m_url_real = (char *)malloc(sizeof(char) * 200);
-            strcpy(m_url_real, "/log.html");
-            strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
-            free(m_url_real);
-        }
-
-        // 访问图片界面
-        else if (*(p + 1) == '5') {
-            char *m_url_real = (char *)malloc(sizeof(char) * 200);
-            strcpy(m_url_real, "/picture.html");
-            strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
-            free(m_url_real);
-        }
-
-        // 访问视频界面
-        else if (*(p + 1) == '6') {
-            char *m_url_real = (char *)malloc(sizeof(char) * 200);
-            strcpy(m_url_real, "/video.html");
-            strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
-            free(m_url_real);
-        }
-
-        // 访问关注界面
-        else if (*(p + 1) == '7') {
-            char *m_url_real = (char *)malloc(sizeof(char) * 200);
-            strcpy(m_url_real, "/fans.html");
-            strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
-
-            free(m_url_real);
-        }
-        else  { // 其他界面
-            strncpy(m_real_file + len, m_url, FILENAME_LEN - len - 1);
-        }
-    }
-    else if(m_ispost == 1) {
-
-        //处理post请求 且是登录或者注册
-        if ((*(p + 1) == '2' || *(p + 1) == '3')) {
-
-            char *m_url_real = (char *)malloc(sizeof(char) * 200);
-            strcpy(m_url_real, "/");
-            strcat(m_url_real, m_url + 2);
-            strncpy(m_real_file + len, m_url_real, FILENAME_LEN - len - 1);
-            free(m_url_real);
-
-            //将用户名和密码提取出来
-            //user=abcd&password=asdasd
-            char name[100], password[100];
-            int i;
-            for (i = 5; m_string[i] != '&'; ++i)
-                name[i - 5] = m_string[i];
-            name[i - 5] = '\0';
-
-            int j = 0;        // 此时i在&这里，加10刚好到密码的第一个字符
-            for (i = i + 10; m_string[i] != '\0'; ++i, ++j)
-                password[j] = m_string[i];
-            password[j] = '\0';
-
-            if (*(p + 1) == '3') {
-                //注册，先检测数据库中是否有重名的
-                //没有重名的，进行增加数据
-                char *sql_insert = (char *)malloc(sizeof(char) * 200);
-                strcpy(sql_insert, "INSERT INTO user(username, password) VALUES(");
-                strcat(sql_insert, "'");
-                strcat(sql_insert, name);
-                strcat(sql_insert, "', '");
-                strcat(sql_insert, password);
-                strcat(sql_insert, "')");
-                if (users.find(name) == users.end())
-                {
-                    m_lock_map.lock();
+        if (*(p + 1) == '3') {
+            //注册，先检测数据库中是否有重名的
+            //没有重名的，进行增加数据
+            char *sql_insert = (char *)malloc(sizeof(char) * 200);
+            strcpy(sql_insert, "INSERT INTO user(username, password) VALUES(");
+            strcat(sql_insert, "'");
+            strcat(sql_insert, name);
+            strcat(sql_insert, "', '");
+            strcat(sql_insert, password);
+            strcat(sql_insert, "')");
+            if (users.find(name) == users.end())
+            {
+                m_lock_map.lock();
 //                int res = mysql_query(mysql, sql_insert);
-                    int res = 0; // todo 这里假设总是注册成功
+                int res = 0; // todo 这里假设总是注册成功
+                m_lock_map.unlock();
+
+                if (!res) {
+                    m_lock_map.lock();
+                    users.insert(std::pair<std::string, std::string>(name, password));
                     m_lock_map.unlock();
 
-                    if (!res) {
-                        m_lock_map.lock();
-                        users.insert(std::pair<std::string, std::string>(name, password));
-                        m_lock_map.unlock();
-
-                        strcpy(m_url, "/log.html");
-                        std::cout << "新用户注册成功：user = " << name << ", password = " << password << std::endl;
-                    }
-                    else {
-                        strcpy(m_url, "/registerError.html");
-                        std::cout << "新用户注册失败，数据库写入错误：user = " << name << ", password = " << password << std::endl;
-                    }
+                    strcpy(m_url, "/log.html");
+                    std::cout << "新用户注册成功：user = " << name << ", password = " << password << std::endl;
                 }
                 else {
                     strcpy(m_url, "/registerError.html");
-                    std::cout << "新用户注册失败，用户名重复：user = " << name << ", password = " << password << std::endl;
-
+                    std::cout << "新用户注册失败，数据库写入错误：user = " << name << ", password = " << password << std::endl;
                 }
             }
-                //如果是登录，直接判断
-                //若浏览器端输入的用户名和密码在表中可以查找到，返回1，否则返回0
-            else if (*(p + 1) == '2') {
-                if (users.find(name) != users.end() && users[name] == password)
-                    strcpy(m_url, "/welcome.html");
-                else
-                    strcpy(m_url, "/logError.html");
+            else {
+                strcpy(m_url, "/registerError.html");
+                std::cout << "新用户注册失败，用户名重复：user = " << name << ", password = " << password << std::endl;
+
             }
         }
+            // 如果是登录，直接判断
+            // 若浏览器端输入的用户名和密码在表中可以查找到，返回1，否则返回0
+        else if (*(p + 1) == '2') {
+            if (users.find(name) != users.end() && users[name] == password)
+                strcpy(m_url, "/welcome.html");
+            else
+                strcpy(m_url, "/logError.html");
+        }
+
+    }
+
+    // 访问端口号或者index.html界面, 因为默认是访问这个界面，所有放在if第一行，提高命中率，减少if判断次数
+    if (*(p + 1) == '4') {
+        char *m_url_real = (char *)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/index.html");
+        strncpy(m_real_file + len, m_url_real, strlen(m_url_real));  //拼接路径
+        free(m_url_real);
+    }
+
+    // 访问登录界面
+    else if (*(p + 1) == '1') {
+        char *m_url_real = (char *)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/log.html");
+        strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
+        free(m_url_real);
+    }
+
+    // 访问注册界面
+    else if (*(p + 1) == '0') {
+        char *m_url_real = (char *)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/register.html");
+        strncpy(m_real_file + len, m_url_real, strlen(m_url_real));  //拼接路径
+        free(m_url_real);
+    }
+
+
+
+    // 访问图片界面
+    else if (*(p + 1) == '5') {
+        char *m_url_real = (char *)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/picture.html");
+        strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
+        free(m_url_real);
+    }
+
+        // 访问视频界面
+    else if (*(p + 1) == '6') {
+        char *m_url_real = (char *)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/video.html");
+        strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
+        free(m_url_real);
+    }
+
+        // 访问关注界面
+    else if (*(p + 1) == '7') {
+        char *m_url_real = (char *)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/fans.html");
+        strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
+
+        free(m_url_real);
+    }
+    else  { // 其他界面,跳转到index
+            strncpy(m_real_file + len, m_url, FILENAME_LEN - len - 1);
+//        char *m_url_real = (char *)malloc(sizeof(char) * 200);
+//        strcpy(m_url_real, "/index.html");
+//        strncpy(m_real_file + len, m_url_real, strlen(m_url_real));  //拼接路径
+//        free(m_url_real);
     }
 
 

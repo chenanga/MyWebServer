@@ -51,7 +51,7 @@ Token& Scanner::peek() {
 Mark Scanner::mark() const { return INPUT.mark(); }
 
 void Scanner::EnsureTokensInQueue() {
-  while (true) {
+  while (1) {
     if (!m_tokens.empty()) {
       Token& token = m_tokens.front();
 
@@ -88,7 +88,7 @@ void Scanner::ScanNextToken() {
     return StartStream();
   }
 
-  // get rid of whitespace, etc. (in between tokens it should be irrelevant)
+  // get rid of whitespace, etc. (in between tokens it should be irrelevent)
   ScanToNextToken();
 
   // maybe need to end some blocks
@@ -174,7 +174,7 @@ void Scanner::ScanNextToken() {
 }
 
 void Scanner::ScanToNextToken() {
-  while (true) {
+  while (1) {
     // first eat whitespace
     while (INPUT && IsWhitespaceToBeEaten(INPUT.peek())) {
       if (InBlockContext() && Exp::Tab().Matches(INPUT)) {
