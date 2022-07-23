@@ -8,5 +8,5 @@ cd ..
 if [ ! -d bin ];then
    mkdir -p bin
 fi
-mv build/chenWeb bin/
+mv build/bin/chenWeb bin/
 rm -r -f ./build
