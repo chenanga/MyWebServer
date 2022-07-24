@@ -1,4 +1,7 @@
+# CMake 最低版本号要求
 cmake_minimum_required(VERSION 2.6)
+
+# 项目信息
 project(chenWeb)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -32,15 +35,19 @@ include_directories(${PROJECT_SOURCE_DIR}) # 头文件
 set(INC_DIR include)
 include_directories(${INC_DIR})
 
+# 添加子目录
 add_subdirectory(lib/yaml-cpp)
 add_subdirectory(config)
 
+# 指定生成目标
 add_executable(chenWeb main.cpp
         config/config.cpp pool/threadpool.cpp http/http_conn.cpp utils/utils.cpp
         http/http_request.cpp http/http_response.cpp global/global.cpp)
 
 
 find_package(Threads)
+
+# 添加链接库
 target_link_libraries(chenWeb chenWeb_config)
 target_link_libraries(chenWeb ${CMAKE_THREAD_LIBS_INIT} )
 
