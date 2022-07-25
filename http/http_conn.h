@@ -48,6 +48,7 @@ public:
 
     bool read();  // 非阻塞的读,循环读取客户数据，直到无数据可读或对方关闭连接
     bool write();  // 非阻塞的写
+    inline sockaddr_in *get_address() { return &m_address; }
 
 private:
     int m_sock_fd;  // 该http连接的socket

@@ -479,5 +479,5 @@ bool WriteBinary(ostream_wrapper& out, const Binary& binary) {
                           false);
   return true;
 }
-}  // namespace Utils
+}  // namespace TimerUtils
 }  // namespace YAML

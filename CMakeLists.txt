@@ -41,8 +41,8 @@ add_subdirectory(config)
 
 # 指定生成目标
 add_executable(chenWeb main.cpp
-        config/config.cpp pool/threadpool.cpp http/http_conn.cpp utils/utils.cpp
-        http/http_request.cpp http/http_response.cpp global/global.cpp)
+        config/config.cpp pool/threadpool.cpp http/http_conn.cpp timer/listtimer.cpp utils/utils.cpp
+        http/http_request.cpp http/http_response.cpp global/global.cpp )
 
 
 find_package(Threads)
