@@ -131,7 +131,7 @@ void ListTimer::tick() {
     if(head == nullptr)
         return;
 
-    time_t cur = time( nullptr );  // 获取当前系统时间
+    time_t cur = time(nullptr);  // 获取当前系统时间
     Timer* tmp = head;
     // 从头节点开始依次处理每个定时器，直到遇到一个尚未到期的定时器
     while(tmp) {
@@ -142,7 +142,7 @@ void ListTimer::tick() {
 
         // 调用定时器的回调函数，以执行定时任务
         tmp->cb_func(tmp->user_data);
-        std::cout << "close with the client: " << inet_ntoa(tmp->user_data->address.sin_addr) << std::endl;
+        LOG_INFO("Client disconnect : conn_fd = %d, client_address = %s", tmp->user_data->sock_fd, inet_ntoa(tmp->user_data->address.sin_addr));
 
         // 执行完定时器中的定时任务之后，就将它从链表中删除，并重置链表头节点
         head = tmp->next;

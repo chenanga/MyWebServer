@@ -29,7 +29,7 @@ ThreadPool<T>::ThreadPool(int thread_number, int max_requests)
             // todo, log输出
             throw std::exception();
         }
-        std::cout << "success create the " << i << "th thread" << std::endl;
+        LOG_INFO("success create the %dth thread", i);
     }
 }
 

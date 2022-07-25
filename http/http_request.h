@@ -15,6 +15,7 @@
 #include "state_code.h"
 #include "../global/global.h"
 #include "../lock/locker.h"
+#include "../log/log.h"
 
 
 class HttpRequest {

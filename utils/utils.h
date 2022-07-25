@@ -8,6 +8,7 @@
 #include <sys/epoll.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include "../log/log.h"
 
 
 // 添加信号捕捉

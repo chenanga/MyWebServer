@@ -13,6 +13,7 @@
 #include <cassert>
 
 #include "../http/http_conn.h"
+#include "../log/log.h"
 
 // 前向声明
 class Timer;

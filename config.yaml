@@ -1,10 +1,19 @@
 # 端口号
 PORT: 10000
 
+# 日志
+# 0，打开日志
+# 1，关闭日志
+close_log: 0
+
 # 日志写入方式，默认同步
 # 0，同步写入
 # 1，异步写入
 LOGWrite: 1
+
+# 日志等级，LOG_DEBUG: 0, LOG_INFO: 1, LOG_WARN: 2, LOG_ERROR: 3
+# 显示大于等于LogLevel的
+LogLevel: 1
 
 # 触发组合模式,默认listenfd LT + connfd LT
 # 0，表示使用LT + LT
@@ -24,10 +33,6 @@ sql_num: 8
 # 线程池内的线程数量,默认8
 thread_num: 8
 
-# 日志, 默认打开
-# 0，打开日志
-# 1，关闭日志
-close_log: 0
 
 # 并发模型,默认是proactor
 # 0，Proactor模型

@@ -15,7 +15,7 @@
 #include "utils/utils.h"
 #include "global/global.h"
 #include "timer/listtimer.h"
-
+#include "log/log.h"
 
 const int MAX_FD = 65536;  //最大文件描述符
 const int MAX_EVENT_NUMBER = 20000; //最大事件数
@@ -24,6 +24,10 @@ const int TIMESLOT = 5;
 
 
 int main(int argc, char * argv[]) {
+    Log::get_instance()->init("./bin/log/chenWebLog", 2000, 800000, 0, 1);
+
+    LOG_INFO("========== Server start ==========");
+
     int ret = 0;
 //    if (argc <= 1) {
 //        std::cout << "按照如下格式运行：" << basename(argv[0]) << "port_number\n" << std::endl;
@@ -44,6 +48,10 @@ int main(int argc, char * argv[]) {
     Config config;
     config.loadconfig(config_file_path);
 
+    if(config.m_PORT > 65535 || config.m_PORT < 1024) {
+        LOG_ERROR("Port:%d error!",  config.m_PORT);
+        exit(-1);
+    }
     std::cout << "浏览器端按照 ip:" << config.m_PORT << " 方式运行，例如 http://192.168.184.132:10000/" << std::endl;
 
 
@@ -53,7 +61,7 @@ int main(int argc, char * argv[]) {
         pool = new ThreadPool<HttpConn>();
     }
     catch(...) {
-
+        LOG_ERROR("线程池初始化失败");
         exit(-1);
     }
 
@@ -130,7 +138,7 @@ int main(int argc, char * argv[]) {
                 socklen_t client_address_len = sizeof(client_address);
                 int conn_fd = accept(listen_fd, (struct sockaddr *)&client_address, &client_address_len);
                 if ( conn_fd < 0 ) {
-                    std::cout << "errno is: " << errno << std::endl;
+                    LOG_WARN("errno is: %d", errno);
                     continue;
                 }
                 if (HttpConn::m_user_count >= MAX_FD) {
@@ -139,7 +147,7 @@ int main(int argc, char * argv[]) {
                     close(conn_fd);
                     continue;
                 }
-
+                LOG_INFO("Client connect : conn_fd = %d, client_address = %s", conn_fd, inet_ntoa(client_address.sin_addr));
                 // 将新的客户数据初始化，放入数组
                 users[conn_fd].init(conn_fd, client_address, config.m_TriggerMode);
 
@@ -193,7 +201,6 @@ int main(int argc, char * argv[]) {
                 Timer *timer = users_timer[sock_fd].timer;
                 if (users[sock_fd].read()) {
                     // 一次性读取完所有数据
-                    std::cout << "deal with the client: " << inet_ntoa(users[sock_fd].get_address()->sin_addr) << std::endl;
                     pool->append(users + sock_fd);  // 交给工作线程
                     if (timer) {  // 更新定时器
                         time_t cur = time(nullptr);
@@ -215,7 +222,6 @@ int main(int argc, char * argv[]) {
                     if (timer) {  // 更新定时器
                         time_t cur = time(nullptr);
                         timer->expire = cur + 3 * TIMESLOT;
-                        std::cout << "adjust timer once, client: " << inet_ntoa(users[sock_fd].get_address()->sin_addr) << std::endl;
                         timer_utils.m_timer_list.adjust_timer(timer);
                     }
                 }
@@ -230,7 +236,6 @@ int main(int argc, char * argv[]) {
         // 最后处理定时事件，因为I/O事件有更高的优先级。当然，这样做将导致定时任务不能精准的按照预定的时间执行。
         if (timeout) {
             timer_utils.timer_handler();
-//            std::cout << "handle timer tick " << std::endl;
             timeout = false;
         }
     }

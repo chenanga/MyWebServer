@@ -7,6 +7,7 @@
 
 #include "../lock/locker.h"
 #include "../http/http_conn.h"
+#include "../log/log.h"
 
 // 定义为模板类， 为了复用， T是任务类
 template<typename T>

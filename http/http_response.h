@@ -12,6 +12,7 @@
 
 #include "state_code.h"
 #include "../global/global.h"
+#include "../log/log.h"
 
 class HttpResponse {
 public:

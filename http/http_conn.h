@@ -30,6 +30,7 @@
 #include "state_code.h"
 #include "http_request.h"
 #include "http_response.h"
+#include "../log/log.h"
 
 
 
