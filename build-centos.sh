@@ -10,4 +10,5 @@ fi
 
 mv chenWeb bin/
 
-./bin/chenWeb
+echo '=================================================';
+echo '\033[1;32;40m[success]  Executable file is located ./bin/chenWeb\033[0m\n'
