@@ -24,6 +24,7 @@ const int TIMESLOT = 5;
 
 
 int main(int argc, char * argv[]) {
+    // todo 根据config判断是异步还是同步
     Log::get_instance()->init("./bin/log/chenWebLog", 2000, 800000, 0, 1);
 
     LOG_INFO("========== Server start ==========");
