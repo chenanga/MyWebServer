@@ -9,6 +9,7 @@ set(CXX_FLAGS
 
         -std=c++11
         -rdynamic
+
         )
 if(CMAKE_BUILD_BITS EQUAL 32)
     list(APPEND CXX_FLAGS "-m32")
@@ -31,7 +32,6 @@ message(${PROJECT_BINARY_DIR})
 
 include_directories(${PROJECT_SOURCE_DIR}) # 头文件
 
-
 set(INC_DIR include)
 include_directories(${INC_DIR})
 
@@ -51,3 +51,10 @@ find_package(Threads)
 target_link_libraries(chenWeb chenWeb_config)
 target_link_libraries(chenWeb ${CMAKE_THREAD_LIBS_INIT} )
 
+# mysql， 只能ubuntu使用
+include_directories("/usr/include/mysql")
+link_directories("usr/lib/x86_64-linux-gnu")
+set(MYSQL_LIBS
+        mysqlclient pthread z m rt atomic ssl crypto dl
+        )
+target_link_libraries(chenWeb  ${MYSQL_LIBS})
