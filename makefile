@@ -11,7 +11,7 @@ endif
 
 # main.cpp  ./config/config.cpp ./utils/utils.cpp ./http/http_conn.cpp ./pool/threadpool.cpp
 chenWeb: main.cpp  config/config.cpp utils/utils.cpp global/global.cpp log/log.cpp pool/sqlconnpool.cpp timer/listtimer.cpp http/http_request.cpp http/http_response.cpp  http/http_conn.cpp pool/threadpool.cpp
-	$(CXX) -o chenWeb  $^ $(CXXFLAGS) -lpthread -lyaml-cpp -lmysqlclient
+	$(CXX) -std=c++11 -o chenWeb  $^ $(CXXFLAGS) -lpthread -lyaml-cpp -lmysqlclient
 
 clean:
 	rm  -r bin/chenWeb
