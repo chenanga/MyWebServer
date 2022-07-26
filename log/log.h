@@ -62,14 +62,14 @@ private:
     BlockQueue<std::string> *m_log_queue; //阻塞队列
     bool m_is_async;                  //是否同步标志位
     Locker m_mutex;
-    int m_level;
+    int m_level;  // 开关，构造函数中初始化为false， init初始化为true
     bool m_log_switch;
 };
 
 
 #define LOG_BASE(level, format, ...) \
     do {                             \
-        Log* log = Log::get_instance();      \
+        Log* log = Log::get_instance(); \
         if (log->getSwitch() && log->getLevel()) { \
             log->write_log(level, format, ##__VA_ARGS__); \
             log->flush();                                     \

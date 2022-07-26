@@ -23,6 +23,7 @@
 #include <sys/uio.h>
 #include <map>
 #include <iostream>
+#include <mysql/mysql.h>
 
 #include "../utils/utils.h"
 #include "../pool/threadpool.h"

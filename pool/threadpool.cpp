@@ -3,8 +3,8 @@
 
 
 template <typename T>
-ThreadPool<T>::ThreadPool(int thread_number, int max_requests)
-        : thread_number_(thread_number), max_requests_(max_requests), stop_(false), threads_(NULL) {
+ThreadPool<T>::ThreadPool(SqlConnPool *connPool, int thread_number, int max_requests)
+        : thread_number_(thread_number), max_requests_(max_requests), stop_(false), threads_(NULL), m_connPool(connPool) {
     if ((thread_number <= 0 || max_requests <= 0)) {
         // todo, log输出
         throw std::exception();

@@ -10,12 +10,18 @@
 #include <fcntl.h>  // iovec
 #include <unistd.h>
 #include <sys/mman.h> // mmap, PROT_READ, MAP_PRIVATE
+#include <mysql/mysql.h>
 
 
 #include "state_code.h"
 #include "../global/global.h"
 #include "../lock/locker.h"
 #include "../log/log.h"
+#include "../pool/sqlconnpool.h"
+
+
+
+void initmysql_result(SqlConnPool *connPool);
 
 
 class HttpRequest {
@@ -29,6 +35,8 @@ public:
     HTTP_CODE parse_request();  // 解析http请求
     inline bool get_m_linger() const { return m_linger; };  // 是http_conn获取解析后的m_linger
     inline char * get_m_real_file() { return m_real_file; }
+    MYSQL * m_mysql;
+
 private:
     inline char * get_line() { return m_read_buf + m_start_line; };  // 内联函数, 执行速度更快
 

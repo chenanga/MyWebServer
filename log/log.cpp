@@ -4,6 +4,7 @@
 Log::Log() {
     m_count = 0;
     m_is_async = false;
+    m_level = false;
 }
 
 Log::~Log() {

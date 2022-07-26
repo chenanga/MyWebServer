@@ -28,7 +28,7 @@ Linux下C++轻量级Web服务器，基于非阻塞I/O和模拟Proactor事件处�
 
 * 测试前确认已安装MySQL数据库
 
-```mysql
+```m_mysql
 # 建立 webserver 库
 create database webserver;
 

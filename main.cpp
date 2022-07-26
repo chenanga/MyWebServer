@@ -16,6 +16,7 @@
 #include "global/global.h"
 #include "timer/listtimer.h"
 #include "log/log.h"
+#include "pool/sqlconnpool.h"
 
 const int MAX_FD = 65536;  //最大文件描述符
 const int MAX_EVENT_NUMBER = 20000; //最大事件数
@@ -56,10 +57,15 @@ int main(int argc, char * argv[]) {
     std::cout << "浏览器端按照 ip:" << config.m_PORT << " 方式运行，例如 http://192.168.184.132:10000/" << std::endl;
 
 
+    //创建数据库连接池
+    SqlConnPool *sql_conn_pool = SqlConnPool::GetInstance();
+    sql_conn_pool->init("localhost", "chen", "12345678", "webserver", 3306, 8);
+    initmysql_result(sql_conn_pool);
+
     // 创建线程池，初始化
     ThreadPool<HttpConn> * pool = nullptr;
     try{
-        pool = new ThreadPool<HttpConn>();
+        pool = new ThreadPool<HttpConn>(sql_conn_pool);
     }
     catch(...) {
         LOG_ERROR("线程池初始化失败");
@@ -102,6 +108,9 @@ int main(int argc, char * argv[]) {
     addFd(epoll_fd, listen_fd, false, config.m_TriggerMode);
     HttpConn::m_epoll_fd = epoll_fd;
 
+
+
+    // 定时器相关
     int pipefd[2];  // 定时器用管道
     static ListTimer timer_list;      //创建定时器容器链表
     client_data *users_timer = new client_data[MAX_FD];      //创建连接资源数组

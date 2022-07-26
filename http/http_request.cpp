@@ -1,8 +1,36 @@
 #include "http_request.h"
 
-
+// 将表中的用户名和密码放入map
 std::map<std::string, std::string> users;
 Locker m_lock_map;  // 多线程操作时候使用
+
+void initmysql_result(SqlConnPool *connPool) {
+    //先从连接池中取一个连接
+    MYSQL *mysql = nullptr;
+    SqlConnRAII mysql_coon(&mysql, connPool);
+
+    //在user表中检索username，passwd数据，浏览器端输入
+    if (mysql_query(mysql, "SELECT username,password FROM user"))
+        LOG_ERROR("SELECT error:%s\n", mysql_error(mysql));
+
+    //从表中检索完整的结果集
+    MYSQL_RES *result = mysql_store_result(mysql);
+
+    //返回结果集中的列数
+    int num_fields = mysql_num_fields(result);
+
+    //返回所有字段结构的数组
+    MYSQL_FIELD *fields = mysql_fetch_fields(result);
+
+    //从结果集中获取下一行，将对应的用户名和密码，存入map中
+    while (MYSQL_ROW row = mysql_fetch_row(result)) {
+        std::string temp1(row[0]);
+        std::string temp2(row[1]);
+        users[temp1] = temp2;
+    }
+}
+
+
 
 HttpRequest::HttpRequest() {
 
@@ -22,10 +50,12 @@ void HttpRequest::init() {
     m_method = GET;
     m_linger = false;
     m_ispost = false;
+    m_mysql = nullptr;
     memset(m_real_file, '\0', FILENAME_LEN);
 }
 
 void HttpRequest::init(char *read_buf, int read_idx, struct stat * file_stat, char ** file_address) {
+
     m_read_buf = read_buf;
     m_read_idx = read_idx;
     m_file_stat = file_stat;
@@ -276,8 +306,11 @@ HTTP_CODE HttpRequest::do_request() {
             if (users.find(name) == users.end())
             {
                 m_lock_map.lock();
-//                int res = mysql_query(mysql, sql_insert);
-                int res = 0; // todo 这里假设总是注册成功
+                // 当有用户注册时候，再去取链接
+                SqlConnRAII mysql_coon(&m_mysql, SqlConnPool::GetInstance());
+
+                int res = mysql_query(m_mysql, sql_insert);
+
                 m_lock_map.unlock();
 
                 if (!res) {
@@ -286,17 +319,16 @@ HTTP_CODE HttpRequest::do_request() {
                     m_lock_map.unlock();
 
                     strcpy(m_url, "/log.html");
-                    std::cout << "新用户注册成功：user = " << name << ", password = " << password << std::endl;
+                    LOG_INFO("新用户注册成功：user = %s, password = %s", name, password);
                 }
                 else {
                     strcpy(m_url, "/registerError.html");
-                    std::cout << "新用户注册失败，数据库写入错误：user = " << name << ", password = " << password << std::endl;
+                    LOG_INFO("新用户注册失败，数据库写入错误：user = %s, password = %s", name, password);
                 }
             }
             else {
                 strcpy(m_url, "/registerError.html");
-                std::cout << "新用户注册失败，用户名重复：user = " << name << ", password = " << password << std::endl;
-
+                LOG_INFO("新用户注册失败，用户名重复：user = %s, password = %s", name, password);
             }
         }
             // 如果是登录，直接判断
