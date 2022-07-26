@@ -147,6 +147,8 @@ chenWeb/
 
 5、密码MD5加密
 
+6、注册时候加入验证码
+
 
 ## 致谢
 1. [Github jbeder/yaml-cpp](https://github.com/jbeder/yaml-cpp)
