@@ -15,3 +15,8 @@ if [ ! -d bin/log ];then
 fi
 
 rm -r -f ./build
+
+
+echo '=================================================';
+echo 'Executable file is located ./bin/chenWeb'
+echo '=================================================';
