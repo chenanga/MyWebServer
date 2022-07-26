@@ -11,7 +11,8 @@
 #include <unistd.h>
 #include <sys/mman.h> // mmap, PROT_READ, MAP_PRIVATE
 #include <mysql/mysql.h>
-
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 #include "state_code.h"
 #include "../global/global.h"
@@ -31,7 +32,7 @@ public:
     ~HttpRequest();
 
     void init();  // 初始化一些信息
-    void init(char *read_buf, int read_idx, struct stat * file_stat, char ** file_address);
+    void init(char *read_buf, int read_idx, struct stat * file_stat, char ** file_address, sockaddr_in* client_address);
     HTTP_CODE parse_request();  // 解析http请求
     inline bool get_m_linger() const { return m_linger; };  // 是http_conn获取解析后的m_linger
     inline char * get_m_real_file() { return m_real_file; }
@@ -61,6 +62,7 @@ private:
     char * m_host; // 主机名
     int m_content_length; //HTTP请求的消息总长度
     bool m_linger; // 判断http请求是否要保持连接
+    sockaddr_in* m_client_address;  // 客户通信地址
 
     bool m_ispost;  // 是否为post请求
     char *m_string; // 储存请求数据部分

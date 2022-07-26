@@ -54,12 +54,13 @@ void HttpRequest::init() {
     memset(m_real_file, '\0', FILENAME_LEN);
 }
 
-void HttpRequest::init(char *read_buf, int read_idx, struct stat * file_stat, char ** file_address) {
+void HttpRequest::init(char *read_buf, int read_idx, struct stat * file_stat, char ** file_address, sockaddr_in* client_address) {
 
     m_read_buf = read_buf;
     m_read_idx = read_idx;
     m_file_stat = file_stat;
     m_file_address = file_address;
+    m_client_address = client_address;
     init();
 }
 
@@ -319,25 +320,32 @@ HTTP_CODE HttpRequest::do_request() {
                     m_lock_map.unlock();
 
                     strcpy(m_url, "/log.html");
-                    LOG_INFO("新用户注册成功：user = %s, password = %s", name, password);
+                    LOG_INFO("新用户注册成功：user = %s, password = %s, client_address = %s", name, password, inet_ntoa(m_client_address->sin_addr));
                 }
                 else {
                     strcpy(m_url, "/registerError.html");
-                    LOG_INFO("新用户注册失败，数据库写入错误：user = %s, password = %s", name, password);
+                    LOG_INFO("新用户注册失败，数据库写入错误：user = %s, password = %s, client_address = %s", name, password, inet_ntoa(m_client_address->sin_addr));
                 }
             }
             else {
                 strcpy(m_url, "/registerError.html");
-                LOG_INFO("新用户注册失败，用户名重复：user = %s, password = %s", name, password);
+                LOG_INFO("新用户注册失败，用户名重复：user = %s, password = %s, client_address = %s", name, password, inet_ntoa(m_client_address->sin_addr));
             }
         }
             // 如果是登录，直接判断
             // 若浏览器端输入的用户名和密码在表中可以查找到，返回1，否则返回0
         else if (*(p + 1) == '2') {
-            if (users.find(name) != users.end() && users[name] == password)
+            if (users.find(name) != users.end() && users[name] == password) {
                 strcpy(m_url, "/welcome.html");
-            else
+
+                LOG_INFO("用户登录成功：user = %s, password = %s, client_address = %s",name, password, inet_ntoa(m_client_address->sin_addr));
+
+            }
+            else {
                 strcpy(m_url, "/logError.html");
+                LOG_INFO("用户登录失败，账号或密码错误：user = %s, password = %s, client_address = %s",name, password, inet_ntoa(m_client_address->sin_addr));
+
+            }
         }
 
     }

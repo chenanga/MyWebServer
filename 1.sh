@@ -1,3 +1,3 @@
-sh build.sh
+sh build-centos.sh
 
 ./bin/chenWeb

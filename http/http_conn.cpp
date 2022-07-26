@@ -15,7 +15,7 @@ int HttpConn::m_epoll_fd = -1;
 // 响应以及处理客户端请求, 由线程池中的工作线程调用，处理http请求的入口函数
 void HttpConn::process() {
     // 解析http请求
-    m_http_request.init(m_read_buf, m_read_idx, &m_file_stat, &m_file_address);
+    m_http_request.init(m_read_buf, m_read_idx, &m_file_stat, &m_file_address, get_address());
     HTTP_CODE read_ret = m_http_request.parse_request();
     if (read_ret == NO_REQUEST) {
         modFd(m_epoll_fd, m_sock_fd, EPOLLIN, m_trigger_mode);
