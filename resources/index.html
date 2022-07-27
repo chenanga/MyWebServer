@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>chenWeb在线演示</title>
+    <style>
+      /* 清除默认样式的代码 */
+/* 去除常见标签默认的 margin 和 padding */
+body, h1, h2, h3, h4, h5, h6, p, ul, ol, li, dl, dt, dd, input {
+  margin: 0;
+  padding: 0;
+}
+
+/* 內减模式 */
+* {
+    box-sizing: border-box;
+}
+
+/* 设置网页统一的字体大小、行高、字体系列相关属性 */
+body {
+  font: 12 px/1.5 "Helvetica Neue", Helvetica, Arial, "Microsoft Yahei",
+    "Hiragino Sans GB", "Heiti SC", "WenQuanYi Micro Hei", sans-serif;
+  color: white ;
+}
+
+/* 去除列表默认样式 */
+ul,
+ol {
+  list-style: none;
+}
+
+/* 去除默认的倾斜效果 */
+em,
+i {
+  font-style: normal;
+}
+
+/* 去除a标签默认下划线，并设置默认文字颜色 */
+a {
+  text-decoration: none;
+  color: white;
+}
+
+/* 设置img的垂直对齐方式为居中对齐，去除img默认下间隙 */
+img {
+  vertical-align: middle;
+}
+
+/* 去除input默认样式 */
+input {
+  border: none;
+  outline: none;
+  color: #333;
+}
+
+/* 左浮动 */
+.fl {
+  float: left;
+}
+
+/* 右浮动 */
+.fr {
+  float: right;
+}
+
+/* 双伪元素清除法 */
+.clearfix::before,
+.clearfix::after {
+  content: "";
+  display: table;
+}
+.clearfix::after {
+  clear: both;
+}
+
+.wrapper{
+    width: 1200px;
+    margin: 0 auto;
+}
+
+.header{
+    background-color: #2b303b;
+}
+.header .wrapper{
+    height: 45px;
+}
+.header .wrapper h1{
+    float: left;
+    font-size: 1px;
+
+}
+.header .wrapper h1 a img{
+    margin-top: 10px;
+}
+
+.header .wrapper ul{
+    float: right;
+} 
+
+.header .wrapper ul li{
+    float: left;
+}
+.header .wrapper ul li a{
+    padding: 0 8px;
+    border-right: 1px solid #fff;
+    height: 40px;
+    color: #fff;
+    line-height: 40px;
+}
+.header .wrapper ul li:last-child a{
+    border: none;
+}
+
+
+.footer{
+    background-color: #2e3033;
+}
+.footer .wrapper{
+    height: 80px;
+    padding-top: 30px;
+}
+
+.footer .wrapper dl{
+    float: left;
+    width: 200px;
+}
+.footer .wrapper dl dt{
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+.footer .wrapper dl dd a{
+    display: block;
+    height: 22px;
+    font-size: 12px;
+    line-height: 22px;
+}
+
+.footer .wrapper  .purchase{
+    float: right;
+}
+.footer .wrapper  .purchase p{
+    font-size: 15px;
+    
+    line-height: 1.5;
+}
+
+
+.nva{
+    background-color: #fff;
+}
+
+.body{
+    background-color: #fff;
+}
+.body .wrapper{
+    height: 760px;
+    text-align: center;
+}
+.body .wrapper .btn {
+    /*padding: 50px 0 ;*/
+}
+.body .wrapper .btn button{
+  width: 180px;
+    height: 65px;
+    background-color: #00a4ff;
+    border: none;
+    font-size: 26px;
+    color: white;
+    cursor: pointer;
+}
+.body .wrapper .btn button:first-child{
+  margin-top: 10px;
+
+  /*margin-left: 300px;*/
+    /*float: left;*/
+
+}
+.body .wrapper .btn button:last-child{
+  margin-top: 10px;
+    /*float: right;*/
+    /*margin-right: 300px;*/
+}
+
+.body .wrapper h2{
+    margin-top: 15px;
+    color: #000;
+    font-weight: 400;
+    font-size: 36px;
+}
+.body .wrapper h3{
+    margin-top: 25px;
+    margin-bottom: 30px;
+    color: #000;
+    font-weight: 400;
+    font-size: 16px;
+}
+
+.body .wrapper .box{
+    padding: 48px 50px 0;
+    height: 450px;
+    border: 1px solid black;
+    border-radius: 15px;
+}
+
+.body .wrapper .box .course{
+    float: left;
+    width: 500px;
+    text-align: left;
+}
+
+.body .wrapper .box img{
+    height: 350px;
+    width: 580px;
+    float: right;
+}
+
+.body .wrapper .box .course h2{
+    display: inline-block;
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #000;
+    font-size: 24px;
+}
+
+.body .wrapper .box .course p{
+    color: #000;
+    text-indent: 2em;
+    font-size: 12px;
+    line-height: 2;
+}
+
+.body .wrapper .box .course button{
+    margin-top: 34px;
+    width: 164px;
+    height: 47px;
+    border: 2px solid orange;
+    background-color: white;
+    font-size: 16px;
+}
+
+.body .wrapper .box .course .course_button button {
+  cursor: pointer;
+
+}
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="wrapper">
+        <h1>
+          <a href="#"><img src="./images/logo-mini-touming.png" alt="#" /></a>
+        </h1>
+        <ul>
+          <li><a href="https://blogca.cn">个人网站</a></li>
+          <li><a href="https://blog.csdn.net/weixin_42035347">CSDN</a></li>
+          <li><a href="https://github.com/chenanga">Github主页</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="body">
+        <div class="wrapper">
+          <div class="btn">
+            <form action="1" method="post"> 
+              <button type="submit" >登 录</button>
+            </form>
+            <form action="0" method="post">
+              <button type="submit" >注 册</button>
+            </form>
+          </div>
+            <h2>Linux下C++轻量级Web服务器</h2>
+            <h3>基于非阻塞I/O和模拟Proactor事件处理模式的高并发服务器，支持解析GET、POST请求，能够响应静态资源的请求。</h3>
+            <div class="box">
+                <div class="course">
+                    <h2>主要功能</h2>
+                    <p>- 使用线程池、非阻塞Socket、Epoll (LT模式)和模拟Proactor实现的并发模型； <br></p>
+                    <p>  - 使用状态机解析HTTP请求报文，支持GET和POST请求；<br>  </p>
+                      <p>  - 使用状态机解析HTTP请求报文，支持GET和POST请求；<br>  </p>
+                      <p> - 基于升序的双向链表实现的超时长连接清除，异步的日志系统以及支持YAML文件配置；<br> </p>
+                      <p> - 访问服务器数据库实现Web端用户注册、登录功能，可以请求服务器图片和视频文件。<br> </p>
+                      <li>
+                        <a href="https://github.com/chenanga/MyWebServer">
+                          <div 
+                            class="course_button"> <button>项目地址</button> 
+                          </div>
+                        </a> 
+                      </li>
+                </div>
+                <img src="./images/right.gif" alt="">
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+      <div class="wrapper">
+        <div class="purchase">
+          <p>
+
+            Copyright © 2022 - 2022 
+            Ang Chen.  <br>
+            <a href="https://beian.miit.gov.cn/#/Integrated/index">
+              豫ICP备2021027231号
+
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
