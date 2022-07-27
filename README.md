@@ -32,7 +32,7 @@ Linux下C++轻量级Web服务器，基于非阻塞I/O和模拟Proactor事件处�
 
 * 测试前确认已安装MySQL数据库
 
-```m_mysql
+```mysql
 # 建立 webserver 库
 create database webserver;
 
@@ -72,7 +72,7 @@ databaseParameter:
 - g++
 
 1. 构建编译
-```
+```bash
 cd 当前目录
 sh ./build.sh
 ```
@@ -90,7 +90,7 @@ sh ./build.sh
 
 
 1. 需要先配置yaml-cpp
-```c++
+```bash
 // yaml-cpp 配置
 git clone https://github.com/jbeder/yaml-cpp.git
 cd yaml-cpp/
@@ -117,21 +117,21 @@ ip:10000/
 
 ## 项目结构
 
-```c++
+```bash
 chenWeb/
 
-|-- config/                              // yaml配置文件解析相关
-|-- http/                                // http连接处理解析
-|-- lock/                                // 互斥锁
-|-- log/                                 // 日志
-|-- pool/                                // 线程池
-|-- utils/                            	 // 工具类
-|-- include/                             // 依赖的第三方库的头文件
-|   |--yaml-cpp/                         // yaml配置文件解析
-|-- lib/                                 // 依赖的第三方库
-|   |--yaml-cpp/                         // yaml配置文件解析
-|-- config.yaml                          // 配置文件
-|-- main.cpp                             // 入口函数
+|-- config/                              # yaml配置文件解析相关
+|-- http/                                # http连接处理解析
+|-- lock/                                # 互斥锁
+|-- log/                                 # 日志
+|-- pool/                                # 线程池
+|-- utils/                            	 # 工具类
+|-- include/                             # 依赖的第三方库的头文件
+|   |--yaml-cpp/                         # yaml配置文件解析
+|-- lib/                                 # 依赖的第三方库
+|   |--yaml-cpp/                         # yaml配置文件解析
+|-- config.yaml                          # 配置文件
+|-- main.cpp                             # 入口函数
 |-- CMakeLists.txt
 |-- makefile     
 |-- build.sh
