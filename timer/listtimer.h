@@ -3,14 +3,15 @@
 #ifndef CHENWEB_LISTTIMER_H
 #define CHENWEB_LISTTIMER_H
 
-#include <iostream>
-#include <netinet/in.h>
 #include <fcntl.h>
+#include <netinet/in.h>
 #include <sys/epoll.h>
+#include <unistd.h>
+
+#include <cassert>
 #include <csignal>
 #include <cstring>
-#include <unistd.h>
-#include <cassert>
+#include <iostream>
 
 #include "../http/http_conn.h"
 #include "../log/log.h"
@@ -20,29 +21,23 @@ class Timer;
 
 // 用户数据结构
 struct client_data {
-
     sockaddr_in address;  //客户端socket地址
-    int sock_fd;  //socket文件描述符
-    Timer* timer;  //定时器
+    int sock_fd;          // socket文件描述符
+    Timer *timer;         //定时器
 };
 
-
-
 class Timer {
-
 public:
-    Timer() : prev(), next(){ }
+    Timer() : prev(), next() {}
 
-    time_t expire;  //超时时间
-    void (*cb_func)( client_data* );  //回调函数
-    client_data* user_data;  //连接资源
-    Timer* prev;  //前向定时器
-    Timer* next;  //后继定时器
-
+    time_t expire;                   //超时时间
+    void (*cb_func)(client_data *);  //回调函数
+    client_data *user_data;          //连接资源
+    Timer *prev;                     //前向定时器
+    Timer *next;                     //后继定时器
 };
 
 class ListTimer {
-
 public:
     ListTimer();
     ~ListTimer();  // 常规销毁链表，删除所有定时器
@@ -62,11 +57,10 @@ private:
     Timer *head;  // 头节点
     Timer *tail;  // 尾节点
 
-    void add_timer(Timer *timer, Timer* last_head);
+    void add_timer(Timer *timer, Timer *last_head);
 };
 
-class TimerUtils
-{
+class TimerUtils {
 public:
     TimerUtils() {}
     ~TimerUtils() {}
@@ -99,5 +93,4 @@ public:
 
 void cb_func(client_data *user_data);
 
-
-#endif //CHENWEB_LISTTIMER_H
+#endif  // CHENWEB_LISTTIMER_H

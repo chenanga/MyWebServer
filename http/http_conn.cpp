@@ -1,13 +1,8 @@
 #include "http_conn.h"
 
+HttpConn::HttpConn() {}
 
-HttpConn::HttpConn() {
-
-}
-
-HttpConn::~HttpConn() {
-
-}
+HttpConn::~HttpConn() {}
 
 int HttpConn::m_user_count = 0;
 int HttpConn::m_epoll_fd = -1;
@@ -15,7 +10,8 @@ int HttpConn::m_epoll_fd = -1;
 // 响应以及处理客户端请求, 由线程池中的工作线程调用，处理http请求的入口函数
 void HttpConn::process() {
     // 解析http请求
-    m_http_request.init(m_read_buf, m_read_idx, &m_file_stat, &m_file_address, get_address());
+    m_http_request.init(m_read_buf, m_read_idx, &m_file_stat, &m_file_address,
+                        get_address());
     HTTP_CODE read_ret = m_http_request.parse_request();
     if (read_ret == NO_REQUEST) {
         modFd(m_epoll_fd, m_sock_fd, EPOLLIN, m_trigger_mode);
@@ -25,10 +21,12 @@ void HttpConn::process() {
     m_linger = m_http_request.get_m_linger();
 
     // 生成http响应
-    m_http_response.init(&m_write_idx, m_write_buf, m_linger, m_http_request.get_m_real_file());
-    bool write_ret = m_http_response.generate_response(read_ret, bytes_to_send, m_file_stat, m_iv[0], m_iv[1], m_file_address, m_iv_count);
-    if (!write_ret)
-        close_conn();
+    m_http_response.init(&m_write_idx, m_write_buf, m_linger,
+                         m_http_request.get_m_real_file());
+    bool write_ret = m_http_response.generate_response(
+        read_ret, bytes_to_send, m_file_stat, m_iv[0], m_iv[1], m_file_address,
+        m_iv_count);
+    if (!write_ret) close_conn();
     modFd(m_epoll_fd, m_sock_fd, EPOLLOUT, m_trigger_mode);
 }
 
@@ -44,7 +42,7 @@ void HttpConn::init(int sock_fd, const sockaddr_in &address, int trigger_mode) {
 
     // 添加到epoll对象中
     addFd(m_epoll_fd, sock_fd, true, m_trigger_mode);
-    m_user_count ++;  // 总用户数加1
+    m_user_count++;  // 总用户数加1
 
     init();
 }
@@ -54,33 +52,30 @@ void HttpConn::close_conn() {
     if (m_sock_fd != -1) {
         removeFd(m_epoll_fd, m_sock_fd);
         m_sock_fd = -1;
-        m_user_count --;  // 关闭一个连接，总数量减1
+        m_user_count--;  // 关闭一个连接，总数量减1
     }
 }
 
 // 非阻塞的读,循环读取客户数据，直到无数据可读或对方关闭连接
 bool HttpConn::read() {
-    if (m_read_idx >= READ_BUFFER_SIZE)
-        return false;
+    if (m_read_idx >= READ_BUFFER_SIZE) return false;
 
     // 读取到的字节
     int bytes_read = 0;
     while (true) {
-        bytes_read = recv(m_sock_fd, m_read_buf + m_read_idx, READ_BUFFER_SIZE - m_read_idx, 0);
-        if (bytes_read == -1)
-        {
+        bytes_read = recv(m_sock_fd, m_read_buf + m_read_idx,
+                          READ_BUFFER_SIZE - m_read_idx, 0);
+        if (bytes_read == -1) {
             if (errno == EAGAIN || errno == EWOULDBLOCK)  // 没有数据
                 break;
             return false;
-        }
-        else if (bytes_read == 0)
+        } else if (bytes_read == 0)
             // 对方关闭连接
             return false;
 
         m_read_idx += bytes_read;
-
     }
-//    std::cout << "got a request ：" << m_read_buf << std::endl;
+    //    std::cout << "got a request ：" << m_read_buf << std::endl;
     return true;
 }
 
@@ -88,21 +83,21 @@ bool HttpConn::read() {
 bool HttpConn::write() {
     int temp = 0;
 
-    if ( bytes_to_send == 0 ) {
+    if (bytes_to_send == 0) {
         // 将要发送的字节为0，这一次响应结束。
-        modFd( m_epoll_fd, m_sock_fd, EPOLLIN, m_trigger_mode);
+        modFd(m_epoll_fd, m_sock_fd, EPOLLIN, m_trigger_mode);
         init();
         return true;
     }
 
-    while(1) {
+    while (1) {
         // 分散写
         temp = writev(m_sock_fd, m_iv, m_iv_count);
-        if ( temp <= -1 ) {
+        if (temp <= -1) {
             // 如果TCP写缓冲没有空间，则等待下一轮EPOLLOUT事件，虽然在此期间，
             // 服务器无法立即接收到同一客户的下一个请求，但可以保证连接的完整性。
-            if( errno == EAGAIN ) {
-                modFd( m_epoll_fd, m_sock_fd, EPOLLOUT, m_trigger_mode);
+            if (errno == EAGAIN) {
+                modFd(m_epoll_fd, m_sock_fd, EPOLLOUT, m_trigger_mode);
                 return true;
             }
             unmap();
@@ -134,8 +129,7 @@ bool HttpConn::write() {
             if (m_linger) {
                 init();
                 return true;
-            }
-            else {
+            } else {
                 return false;
             }
         }
@@ -147,7 +141,6 @@ void HttpConn::init() {
     m_linger = false;
     memset(m_read_buf, '\0', READ_BUFFER_SIZE);
     memset(m_write_buf, '\0', READ_BUFFER_SIZE);
-
 }
 
 void HttpConn::unmap() {
@@ -155,5 +148,4 @@ void HttpConn::unmap() {
         munmap(m_file_address, m_file_stat.st_size);
         m_file_address = 0;
     }
-
 }

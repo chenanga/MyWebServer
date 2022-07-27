@@ -1,7 +1,7 @@
 
 #include "config.h"
 
-Config::Config(){
+Config::Config() {
     //端口号,默认9006
     m_PORT = 9006;
 
@@ -26,7 +26,6 @@ Config::Config(){
     //并发模型,默认是proactor
     m_actor_model = 0;
 
-
     //需要修改的数据库信息,登录名,密码,库名
     m_sql_user = "chen";
     m_sql_passwd = "12345678";
@@ -34,11 +33,10 @@ Config::Config(){
 }
 
 int Config::loadconfig(const std::string &config_filename) {
-
     YAML::Node config;
-    try{
+    try {
         config = YAML::LoadFile(config_filename);
-    }catch(YAML::BadFile &e){
+    } catch (YAML::BadFile &e) {
         std::cout << "yaml file read error! " << std::endl;
         return -1;
     }
@@ -69,8 +67,8 @@ int Config::loadconfig(const std::string &config_filename) {
     // 数据库相关参数
     m_sql_user = config["databaseParameter"]["user"].as<std::string>();
     m_sql_passwd = config["databaseParameter"]["passwd"].as<std::string>();
-    m_sql_databasename = config["databaseParameter"]["databasename"].as<std::string>();
-
+    m_sql_databasename =
+        config["databaseParameter"]["databasename"].as<std::string>();
 
     return 0;
 }

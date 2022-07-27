@@ -2,14 +2,14 @@
 #ifndef MYWEB_UTILS_H
 #define MYWEB_UTILS_H
 
+#include <fcntl.h>
+#include <sys/epoll.h>
+#include <unistd.h>
 
 #include <csignal>
 #include <cstring>
-#include <sys/epoll.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include "../log/log.h"
 
+#include "../log/log.h"
 
 // 添加信号捕捉
 void addSig(int sig, void(handler)(int));
@@ -25,5 +25,4 @@ void modFd(int epollfd, int fd, int ev, int mode);
 
 void setNoneBlocking(int fd);  // 设置文件描述符非阻塞
 
-
-#endif //MYWEB_UTILS_H
+#endif  // MYWEB_UTILS_H
