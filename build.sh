@@ -3,7 +3,7 @@ if [ ! -d build ];then
 fi
 cd build
 cmake ..
-make
+make -j
 cd ..
 if [ ! -d bin ];then
    mkdir -p bin
