@@ -32,13 +32,13 @@ class Scanner {
   explicit Scanner(std::istream &in);
   ~Scanner();
 
-  /** Returns true if there are no more tokens to be read. */
+  /** Returns true if there are no more tokens to be Read. */
   bool empty();
 
-  /** Removes the next token in the queue. */
+  /** Removes the next_ token in the queue. */
   void pop();
 
-  /** Returns, but does not remove, the next token in the queue. */
+  /** Returns, but does not remove, the next_ token in the queue. */
   Token &peek();
 
   /** Returns the current mark in the input stream. */
@@ -64,18 +64,18 @@ class Scanner {
 
   /**
    * Scans until there's a valid token at the front of the queue, or the queue
-   * is empty. The state can be checked by {@link #empty}, and the next token
+   * is empty. The state can be checked by {@link #empty}, and the next_ token
    * retrieved by {@link #peek}.
    */
   void EnsureTokensInQueue();
 
   /**
    * The main scanning function; this method branches out to scan whatever the
-   * next token should be.
+   * next_ token should be.
    */
   void ScanNextToken();
 
-  /** Eats the input stream until it reaches the next token-like thing. */
+  /** Eats the input stream until it reaches the next_ token-like thing. */
   void ScanToNextToken();
 
   /** Sets the initial conditions for starting a stream. */
@@ -134,7 +134,7 @@ class Scanner {
   bool IsWhitespaceToBeEaten(char ch);
 
   /**
-   * Returns the appropriate regex to check if the next token is a value token.
+   * Returns the appropriate regex to check if the next_ token is a value token.
    */
   const RegEx &GetValueRegex() const;
 

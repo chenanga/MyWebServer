@@ -95,7 +95,7 @@ void Scanner::ScanNextToken() {
   PopIndentToHere();
 
   // *****
-  // And now branch based on the next few characters!
+  // And now branch based on the next_ few characters!
   // *****
 
   // end of stream

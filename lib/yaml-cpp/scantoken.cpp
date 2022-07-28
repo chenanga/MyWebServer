@@ -32,11 +32,11 @@ void Scanner::ScanDirective() {
   Token token(Token::DIRECTIVE, INPUT.mark());
   INPUT.eat(1);
 
-  // read name
+  // Read name
   while (INPUT && !Exp::BlankOrBreak().Matches(INPUT))
     token.value += INPUT.get();
 
-  // read parameters
+  // Read parameters
   while (1) {
     // first get rid of whitespace
     while (Exp::Blank().Matches(INPUT))
@@ -46,7 +46,7 @@ void Scanner::ScanDirective() {
     if (!INPUT || Exp::Break().Matches(INPUT) || Exp::Comment().Matches(INPUT))
       break;
 
-    // now read parameter
+    // now Read parameter
     std::string param;
     while (INPUT && !Exp::BlankOrBreak().Matches(INPUT))
       param += INPUT.get();
@@ -236,7 +236,7 @@ void Scanner::ScanAnchorOrAlias() {
   while (INPUT && Exp::Anchor().Matches(INPUT))
     name += INPUT.get();
 
-  // we need to have read SOMETHING!
+  // we need to have Read SOMETHING!
   if (name.empty())
     throw ParserException(INPUT.mark(), alias ? ErrorMsg::ALIAS_NOT_FOUND
                                               : ErrorMsg::ANCHOR_NOT_FOUND);

@@ -1,6 +1,6 @@
 
-#ifndef MYWEB_HTTP_CONN_H
-#define MYWEB_HTTP_CONN_H
+#ifndef CHENWEB_HTTP_CONN_H
+#define CHENWEB_HTTP_CONN_H
 
 #include <arpa/inet.h>
 #include <fcntl.h>
@@ -39,44 +39,37 @@ public:
     HttpConn();
     ~HttpConn();
 
-    static int m_epoll_fd;  // 所有的socket上的事件都被注册到同一个epoll对象上
-    static int m_user_count;  // 统计用户的数量
+    static int epoll_fd_;  // 所有的socket上的事件都被注册到同一个epoll对象上
+    static int user_count_;  // 统计用户的数量
 
-    void process();  // 响应以及处理客户端请求
-    void init(int sock_fd, const sockaddr_in& address,
-              int trigger_mode);  // 初始化接受新的连接
-    void close_conn();            // 关闭连接
-
-    bool read();  // 非阻塞的读,循环读取客户数据，直到无数据可读或对方关闭连接
-    bool write();  // 非阻塞的写
-    inline sockaddr_in* get_address() { return &m_address; }
+    // 初始化接受新的连接
+    void Init(int sock_fd, const sockaddr_in& address, int trigger_mode);
+    void Process();    // 响应以及处理客户端请求
+    void CloseConn();  // 关闭连接
+    bool Read();       // 非阻塞的读
+    bool Write();      // 非阻塞的写
+    inline sockaddr_in* getAddress() { return &address_; }
 
 private:
-    int m_sock_fd;          // 该http连接的socket
-    int m_trigger_mode;     // 触发组合模式
-    sockaddr_in m_address;  // 通信的socket地址
+    int sock_fd_;                     // 该http连接的socket
+    int trigger_mode_;                // 触发组合模式
+    sockaddr_in address_;             // 通信的socket地址
+    char read_buf_[kReadBufferSize];  // 存储读取的请求报文数据
+    int read_idx_;  // 缓冲区中m_read_buf中数据的最后一个字节的下一个位置
+    bool linger_;                       // 判断http请求是否要保持连接
+    char write_buf_[kWriteBufferSize];  // 写缓冲区
+    int write_idx_;                     // 写缓冲区中待发送的字节数
+    int bytes_to_send_;                 // 将要发送的数据的字节数
+    int bytes_have_send_;               // 已经发送的字节数
+    struct stat file_stat_;             // 目标文件的状态。
+    char* file_address_;  // 客户请求的目标文件被mmap到内存中的起始位置
+    struct iovec iv_[2];          // 采用writev来执行写操作
+    int iv_count_;                // 使用的块数
+    HttpRequest http_request_;    // 解析请求内容
+    HttpResponse http_response_;  // 生成响应
 
-    char m_read_buf[READ_BUFFER_SIZE];  // 存储读取的请求报文数据
-    int m_read_idx;  // 缓冲区中m_read_buf中数据的最后一个字节的下一个位置
-    bool m_linger;  // 判断http请求是否要保持连接
-    char m_write_buf[WRITE_BUFFER_SIZE];  // 写缓冲区
-    int m_write_idx;  // 写缓冲区中待发送的字节数
-
-    int bytes_to_send;    // 将要发送的数据的字节数
-    int bytes_have_send;  // 已经发送的字节数
-
-    struct stat
-        m_file_stat;  // 目标文件的状态。通过它我们可以判断文件是否存在、是否为目录、是否可读，并获取文件大小等信息
-    char* m_file_address;  // 客户请求的目标文件被mmap到内存中的起始位置
-
-    struct iovec m_iv
-        [2];  // 我们将采用writev来执行写操作，所以定义下面两个成员，其中m_iv_count表示被写内存块的数量。
-    int m_iv_count;                // 使用的块数
-    HttpRequest m_http_request;    // 解析请求内容
-    HttpResponse m_http_response;  // 生成响应
-
-    void init();
-    void unmap();  // 释放内存映射
+    void Init();
+    void Unmap();  // 释放内存映射
 };
 
 #endif  // MYWEB_HTTP_CONN_H

@@ -1,5 +1,3 @@
-
-
 #ifndef CHENWEB_SQLCONNPOOL_H
 #define CHENWEB_SQLCONNPOOL_H
 
@@ -17,42 +15,44 @@ class SqlConnPool {
 public:
     MYSQL *GetConnection();               //获取数据库连接
     bool ReleaseConnection(MYSQL *conn);  //释放连接
-    int GetFreeConn();                    //获取连接
-    void DestroyPool();                   //销毁所有连接
+    inline int GetFreeConn() {
+        return this->free_conn_;
+    };                   //获取当前空闲的连接数
+    void DestroyPool();  //销毁所有连接
 
     //单例模式
     static SqlConnPool *GetInstance();
 
-    void init(std::string url, std::string User, std::string PassWord,
-              std::string DatabaseName, int Port, int MaxConn);
+    void init(std::string url, std::string user, std::string password,
+              std::string database_name, int port, int max_conn);
 
 private:
     SqlConnPool();
     ~SqlConnPool();
 
-    int m_MaxConn;   //最大连接数
-    int m_CurConn;   //当前已使用的连接数
-    int m_FreeConn;  //当前空闲的连接数
-    Locker lock;
-    std::list<MYSQL *> connList;  //连接池
-    Sem reserve;                  // 信号量
+    int max_conn_;   //最大连接数
+    int cur_conn_;   //当前已使用的连接数
+    int free_conn_;  //当前空闲的连接数
+    Locker lock_;
+    std::list<MYSQL *> conn_list_;  //连接池
+    Sem reserve_;                   // 信号量
 
 public:
-    std::string m_url;           //主机地址
-    std::string m_Port;          //数据库端口号
-    std::string m_User;          //登陆数据库用户名
-    std::string m_PassWord;      //登陆数据库密码
-    std::string m_DatabaseName;  //使用数据库名
+    std::string url_;            //主机地址
+    std::string port_;           //数据库端口号
+    std::string user_;           //登陆数据库用户名
+    std::string password_;       //登陆数据库密码
+    std::string database_name_;  //使用数据库名
 };
 
 /* 资源在对象构造初始化 资源在对象析构时释放*/
 class SqlConnRAII {
 public:
     // 双指针对MYSQL *sql修改
-    SqlConnRAII(MYSQL **sql, SqlConnPool *connpool) {
-        *sql = connpool->GetConnection();
+    SqlConnRAII(MYSQL **sql, SqlConnPool *conn_pool) {
+        *sql = conn_pool->GetConnection();
         sql_ = *sql;
-        connpool_ = connpool;
+        connpool_ = conn_pool;
     }
 
     ~SqlConnRAII() {

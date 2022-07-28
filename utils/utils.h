@@ -12,17 +12,18 @@
 #include "../log/log.h"
 
 // 添加信号捕捉
-void addSig(int sig, void(handler)(int));
+void AddSig(int sig, void(handler)(int));
 
 // 添加文件描述符到epoll中, mode: 0, LT模式  1, ET模式
-void addFd(int epoll_fd, int fd, bool one_shot, int mode);
+void AddFd(int epoll_fd, int fd, bool one_shot, int mode);
 
 // 从内核事件表中删除描述符
-void removeFd(int epollfd, int fd);
+void RemoveFd(int epoll_fd, int fd);
 
 // 修改文件描述符, mode: 0, LT模式  1, ET模式
-void modFd(int epollfd, int fd, int ev, int mode);
+void ModifyFd(int epoll_fd, int fd, int ev, int mode);
 
-void setNoneBlocking(int fd);  // 设置文件描述符非阻塞
+// 设置文件描述符非阻塞
+void SetNoneBlocking(int fd);
 
 #endif  // MYWEB_UTILS_H

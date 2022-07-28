@@ -32,7 +32,7 @@ unsigned ParseHex(const std::string& str, const Mark& mark) {
 std::string Str(unsigned ch) { return std::string(1, static_cast<char>(ch)); }
 
 // Escape
-// . Translates the next 'codeLength' characters into a hex number and returns
+// . Translates the next_ 'codeLength' characters into a hex number and returns
 // the result.
 // . Throws if it's not actually hex.
 std::string Escape(Stream& in, int codeLength) {

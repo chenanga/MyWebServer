@@ -22,25 +22,25 @@ public:
 
     void init(int *write_idx, char *write_buf, bool linger, char *real_file);
     bool generate_response(HTTP_CODE read_ret, int &bytes_to_send,
-                           struct stat &m_file_stat, struct iovec &m_iv_0,
-                           struct iovec &m_iv_1, char *&file_address,
-                           int &m_iv_count);
+                           struct stat &file_stat, struct iovec &iv_0,
+                           struct iovec &iv_1, char *&file_address,
+                           int &iv_count);
 
 private:
-    int *m_write_idx;  // 指针接受从http_conn传递来的参数
-    char *m_write_buf;
-    bool m_linger;      // 判断http请求是否要保持连接
-    char *m_real_file;  // 请求的文件名
+    int *write_idx_;   // 指针接受从http_conn传递来的参数
+    char *write_buf_;  // 写缓冲
+    bool linger_;      // 判断http请求是否要保持连接
+    char *real_file_;  // 请求的文件名
 
     // 这一组函数被process_write调用以填充HTTP应答。
-    bool add_response(const char *format, ...);
-    bool add_content(const char *content);
-    bool add_content_type();
-    bool add_status_line(int status, const char *title);
-    bool add_headers(int content_length);
-    bool add_content_length(int content_length);
-    bool add_linger();
-    bool add_blank_line();
+    bool AddResponse(const char *format, ...);
+    bool AddContent(const char *content);
+    bool AddContentType();
+    bool AddStatusLine(int status, const char *title);
+    bool AddHeaders(int content_length);
+    bool AddContentLength(int content_length);
+    bool AddLinger();
+    bool AddBlankLine();
 };
 
 #endif  // CHENWEB_HTTP_RESPONSE_H
