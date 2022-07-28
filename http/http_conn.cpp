@@ -4,67 +4,64 @@ HttpConn::HttpConn() {}
 
 HttpConn::~HttpConn() {}
 
-int HttpConn::m_user_count = 0;
-int HttpConn::m_epoll_fd = -1;
+int HttpConn::user_count_ = 0;
+int HttpConn::epoll_fd_ = -1;
 
 // 响应以及处理客户端请求, 由线程池中的工作线程调用，处理http请求的入口函数
-void HttpConn::process() {
+void HttpConn::Process() {
     // 解析http请求
-    m_http_request.init(m_read_buf, m_read_idx, &m_file_stat, &m_file_address,
-                        get_address());
-    HTTP_CODE read_ret = m_http_request.parse_request();
+    http_request_.Init(read_buf_, read_idx_, &file_stat_, &file_address_,
+                       getAddress());
+    HTTP_CODE read_ret = http_request_.ParseRequest();
     if (read_ret == NO_REQUEST) {
-        modFd(m_epoll_fd, m_sock_fd, EPOLLIN, m_trigger_mode);
+        ModifyFd(epoll_fd_, sock_fd_, EPOLLIN, trigger_mode_);
         return;
     }
 
-    m_linger = m_http_request.get_m_linger();
-
     // 生成http响应
-    m_http_response.init(&m_write_idx, m_write_buf, m_linger,
-                         m_http_request.get_m_real_file());
-    bool write_ret = m_http_response.generate_response(
-        read_ret, bytes_to_send, m_file_stat, m_iv[0], m_iv[1], m_file_address,
-        m_iv_count);
-    if (!write_ret) close_conn();
-    modFd(m_epoll_fd, m_sock_fd, EPOLLOUT, m_trigger_mode);
+    http_response_.init(&write_idx_, write_buf_, http_request_.getLinger(),
+                        http_request_.getRealFile());
+    bool write_ret = http_response_.generate_response(
+        read_ret, bytes_to_send_, file_stat_, iv_[0], iv_[1], file_address_,
+        iv_count_);
+    if (!write_ret) CloseConn();
+    ModifyFd(epoll_fd_, sock_fd_, EPOLLOUT, trigger_mode_);
 }
 
 // 初始化接受新的连接
-void HttpConn::init(int sock_fd, const sockaddr_in &address, int trigger_mode) {
-    m_sock_fd = sock_fd;
-    m_address = address;
-    m_trigger_mode = trigger_mode;
+void HttpConn::Init(int sock_fd, const sockaddr_in &address, int trigger_mode) {
+    sock_fd_ = sock_fd;
+    address_ = address;
+    trigger_mode_ = trigger_mode;
 
     // 设置端口复用
     int reuse = 1;
-    setsockopt(m_sock_fd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
+    setsockopt(sock_fd_, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
 
     // 添加到epoll对象中
-    addFd(m_epoll_fd, sock_fd, true, m_trigger_mode);
-    m_user_count++;  // 总用户数加1
-
-    init();
+    AddFd(epoll_fd_, sock_fd, true, trigger_mode_);
+    user_count_++;  // 总用户数加1
+    Init();
 }
 
 // 关闭连接
-void HttpConn::close_conn() {
-    if (m_sock_fd != -1) {
-        removeFd(m_epoll_fd, m_sock_fd);
-        m_sock_fd = -1;
-        m_user_count--;  // 关闭一个连接，总数量减1
+void HttpConn::CloseConn() {
+    if (sock_fd_ != -1) {
+        RemoveFd(epoll_fd_, sock_fd_);
+        sock_fd_ = -1;
+        user_count_--;  // 关闭一个连接，总数量减1
     }
 }
 
 // 非阻塞的读,循环读取客户数据，直到无数据可读或对方关闭连接
-bool HttpConn::read() {
-    if (m_read_idx >= READ_BUFFER_SIZE) return false;
+bool HttpConn::Read() {
+    if (read_idx_ >= kReadBufferSize) return false;
 
     // 读取到的字节
     int bytes_read = 0;
     while (true) {
-        bytes_read = recv(m_sock_fd, m_read_buf + m_read_idx,
-                          READ_BUFFER_SIZE - m_read_idx, 0);
+        bytes_read = recv(sock_fd_, read_buf_ + read_idx_,
+                          kReadBufferSize - read_idx_, 0);
         if (bytes_read == -1) {
             if (errno == EAGAIN || errno == EWOULDBLOCK)  // 没有数据
                 break;
@@ -72,80 +69,76 @@ bool HttpConn::read() {
         } else if (bytes_read == 0)
             // 对方关闭连接
             return false;
-
-        m_read_idx += bytes_read;
+        read_idx_ += bytes_read;
     }
-    //    std::cout << "got a request ：" << m_read_buf << std::endl;
     return true;
 }
 
 // 一次写完所有数据
-bool HttpConn::write() {
+bool HttpConn::Write() {
     int temp = 0;
 
-    if (bytes_to_send == 0) {
-        // 将要发送的字节为0，这一次响应结束。
-        modFd(m_epoll_fd, m_sock_fd, EPOLLIN, m_trigger_mode);
-        init();
+    // 将要发送的字节为0，这一次响应结束。
+    if (bytes_to_send_ == 0) {
+        ModifyFd(epoll_fd_, sock_fd_, EPOLLIN, trigger_mode_);
+        Init();
         return true;
     }
 
     while (1) {
         // 分散写
-        temp = writev(m_sock_fd, m_iv, m_iv_count);
+        temp = writev(sock_fd_, iv_, iv_count_);
         if (temp <= -1) {
-            // 如果TCP写缓冲没有空间，则等待下一轮EPOLLOUT事件，虽然在此期间，
-            // 服务器无法立即接收到同一客户的下一个请求，但可以保证连接的完整性。
+            /*             如果TCP写缓冲没有空间，则等待下一轮EPOLLOUT事件，虽然在此期间，
+                         服务器无法立即接收到同一客户的下一个请求，但可以保证连接的完整性。*/
             if (errno == EAGAIN) {
-                modFd(m_epoll_fd, m_sock_fd, EPOLLOUT, m_trigger_mode);
+                ModifyFd(epoll_fd_, sock_fd_, EPOLLOUT, trigger_mode_);
                 return true;
             }
-            unmap();
+            Unmap();
             return false;
         }
+        bytes_have_send_ += temp;
+        bytes_to_send_ -= temp;
 
-        bytes_have_send += temp;
-        bytes_to_send -= temp;
-
-        //第一个iovec头部信息的数据已发送完，发送第二个iovec数据
-        if (bytes_have_send >= m_iv[0].iov_len) {
-            //不再继续发送头部信息
-            m_iv[0].iov_len = 0;
-            m_iv[1].iov_base = m_file_address + (bytes_have_send - m_write_idx);
-            m_iv[1].iov_len = bytes_to_send;
+        // 第一个iovec头部信息的数据已发送完，发送第二个iovec数据
+        if (bytes_have_send_ >= iv_[0].iov_len) {
+            // 不再继续发送头部信息
+            iv_[0].iov_len = 0;
+            iv_[1].iov_base = file_address_ + (bytes_have_send_ - write_idx_);
+            iv_[1].iov_len = bytes_to_send_;
         }
 
-        //继续发送第一个iovec头部信息的数据
+        // 继续发送第一个iovec头部信息的数据
         else {
-            m_iv[0].iov_base = m_write_buf + bytes_have_send;
-            m_iv[0].iov_len = m_iv[0].iov_len - temp;
+            iv_[0].iov_base = write_buf_ + bytes_have_send_;
+            iv_[0].iov_len = iv_[0].iov_len - temp;
         }
 
-        if (bytes_to_send <= 0) {
+        if (bytes_to_send_ <= 0) {
             // 没有数据要发送了
-            unmap();
-            modFd(m_epoll_fd, m_sock_fd, EPOLLIN, m_trigger_mode);
+            Unmap();
+            ModifyFd(epoll_fd_, sock_fd_, EPOLLIN, trigger_mode_);
 
-            if (m_linger) {
-                init();
+            if (linger_) {
+                Init();
                 return true;
-            } else {
+            } else
                 return false;
-            }
         }
     }
 }
 
-void HttpConn::init() {
-    m_read_idx = 0;
-    m_linger = false;
-    memset(m_read_buf, '\0', READ_BUFFER_SIZE);
-    memset(m_write_buf, '\0', READ_BUFFER_SIZE);
+void HttpConn::Init() {
+    read_idx_ = 0;
+    linger_ = false;
+    memset(read_buf_, '\0', kReadBufferSize);
+    memset(write_buf_, '\0', kReadBufferSize);
 }
 
-void HttpConn::unmap() {
-    if (m_file_address) {
-        munmap(m_file_address, m_file_stat.st_size);
-        m_file_address = 0;
+void HttpConn::Unmap() {
+    if (file_address_) {
+        munmap(file_address_, file_stat_.st_size);
+        file_address_ = 0;
     }
 }

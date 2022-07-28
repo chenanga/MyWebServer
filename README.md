@@ -39,8 +39,8 @@ create database webserver;
 # 创建user表
 USE webserver;
 CREATE TABLE user(
-    username char(50) NULL,
-    password char(50) NULL
+    username char(50) nullptr,
+    password char(50) nullptr
 )ENGINE=InnoDB;
 
 # 添加数据
@@ -122,7 +122,7 @@ chenWeb/
 
 |-- config/                              # yaml配置文件解析相关
 |-- http/                                # http连接处理解析
-|-- lock/                                # 互斥锁
+|-- lock_/                                # 互斥锁
 |-- log/                                 # 日志
 |-- pool/                                # 线程池
 |-- utils/                            	 # 工具类
@@ -154,6 +154,6 @@ chenWeb/
 6、注册时候加入验证码
 
 
-## 致谢
+## 引用
 1. [Github jbeder/yaml-cpp](https://github.com/jbeder/yaml-cpp)
 

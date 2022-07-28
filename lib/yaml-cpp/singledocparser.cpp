@@ -25,7 +25,7 @@ SingleDocParser::SingleDocParser(Scanner& scanner, const Directives& directives)
 SingleDocParser::~SingleDocParser() = default;
 
 // HandleDocument
-// . Handles the next document
+// . Handles the next_ document
 // . Throws a ParserException on error.
 void SingleDocParser::HandleDocument(EventHandler& eventHandler) {
   assert(!m_scanner.empty());  // guaranteed that there are tokens
@@ -209,7 +209,7 @@ void SingleDocParser::HandleFlowSequence(EventHandler& eventHandler) {
       break;
     }
 
-    // then read the node
+    // then Read the node
     HandleNode(eventHandler);
 
     if (m_scanner.empty())

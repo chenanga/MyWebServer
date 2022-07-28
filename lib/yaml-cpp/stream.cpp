@@ -370,7 +370,7 @@ void Stream::StreamInUtf16() const {
         // stream.
         QueueUnicodeCodepoint(m_readahead, CP_REPLACEMENT_CHARACTER);
 
-        // Deal with the next UTF-16 unit
+        // Deal with the next_ UTF-16 unit
         if (chLow < 0xD800 || chLow >= 0xE000) {
           // Easiest case: queue the codepoint and return
           QueueUnicodeCodepoint(m_readahead, ch);

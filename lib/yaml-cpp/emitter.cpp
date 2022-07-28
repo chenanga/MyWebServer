@@ -255,8 +255,8 @@ void Emitter::EmitNewline() {
 
 bool Emitter::CanEmitNewline() const { return true; }
 
-// Put the stream in a state so we can simply write the next node
-// E.g., if we're in a sequence, write the "- "
+// Put the stream in a state so we can simply Write the next_ node
+// E.g., if we're in a sequence, Write the "- "
 void Emitter::PrepareNode(EmitterNodeType::value child) {
   switch (m_pState->CurGroupNodeType()) {
     case EmitterNodeType::NoType:

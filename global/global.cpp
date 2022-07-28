@@ -1,7 +1,7 @@
 
 #include "global.h"
 
-std::string g_str_cur_dir;
+std::string kStrCurDir;
 
 //定义http响应的一些状态信息
 const char *ok_200_title = "OK";
