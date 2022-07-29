@@ -17,9 +17,9 @@ void HttpConn::Process() {
         ModifyFd(epoll_fd_, sock_fd_, EPOLLIN, trigger_mode_);
         return;
     }
-
+    linger_ = http_request_.getLinger();
     // 生成http响应
-    http_response_.init(&write_idx_, write_buf_, http_request_.getLinger(),
+    http_response_.init(&write_idx_, write_buf_, linger_,
                         http_request_.getRealFile());
     bool write_ret = http_response_.generate_response(
         read_ret, bytes_to_send_, file_stat_, iv_[0], iv_[1], file_address_,
@@ -112,7 +112,7 @@ bool HttpConn::Write() {
         // 继续发送第一个iovec头部信息的数据
         else {
             iv_[0].iov_base = write_buf_ + bytes_have_send_;
-            iv_[0].iov_len = iv_[0].iov_len - temp;
+            iv_[0].iov_len = iv_[0].iov_len - bytes_have_send_;
         }
 
         if (bytes_to_send_ <= 0) {

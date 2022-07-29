@@ -120,18 +120,19 @@ ip:10000/
 ```bash
 chenWeb/
 
-|-- config/                              # yaml配置文件解析相关
+|-- config_/                             # yaml配置文件解析相关
 |-- http/                                # http连接处理解析
-|-- lock_/                                # 互斥锁
+|-- lock_/                               # 互斥锁
 |-- log/                                 # 日志
 |-- pool/                                # 线程池
 |-- utils/                            	 # 工具类
+|-- webserver/                           # 入口函数类
 |-- include/                             # 依赖的第三方库的头文件
 |   |--yaml-cpp/                         # yaml配置文件解析
 |-- lib/                                 # 依赖的第三方库
 |   |--yaml-cpp/                         # yaml配置文件解析
-|-- config.yaml                          # 配置文件
-|-- main.cpp                             # 入口函数
+|-- config_.yaml                         # 配置文件
+|-- main.cpp                             
 |-- CMakeLists.txt
 |-- makefile     
 |-- build.sh

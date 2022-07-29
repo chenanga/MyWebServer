@@ -52,13 +52,13 @@ private:
                        // true为开启日志， false为关闭日志
 };
 
-#define LOG_BASE(level, format, ...)                     \
-    do {                                                 \
-        Log *log = Log::GetInstance();                   \
-        if (log->getSwitch() && log->getLevel()) {       \
-            log->WriteLog(level, format, ##__VA_ARGS__); \
-            log->Flush();                                \
-        }                                                \
+#define LOG_BASE(level, format, ...)                          \
+    do {                                                      \
+        Log *log = Log::GetInstance();                        \
+        if (log->getSwitch() && (level >= log->getLevel())) { \
+            log->WriteLog(level, format, ##__VA_ARGS__);      \
+            log->Flush();                                     \
+        }                                                     \
     } while (0);
 
 #define LOG_DEBUG(format, ...)             \
