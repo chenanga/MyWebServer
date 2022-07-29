@@ -1,5 +1,9 @@
 # chenWeb
 
+## 项目状态
+![项目状态](https://github.com/chenanga/MyWebServer
+/workflows/CMake/badge.svg)
+
 ## 项目描述
 
 Linux下C++轻量级Web服务器，基于非阻塞I/O和模拟Proactor事件处理模式的高并发服务器，支持解析GET、POST请求，能够响应静态资源的请求。
