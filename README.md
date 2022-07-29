@@ -1,8 +1,7 @@
 # chenWeb
 
 ## 项目状态
-![项目状态](https://github.com/chenanga/MyWebServer
-/workflows/CMake/badge.svg)
+![](https://github.com/chenanga/MyWebServer/workflows/CMake/badge.svg)
 
 ## 项目描述
 
