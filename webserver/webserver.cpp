@@ -279,7 +279,7 @@ void WebServer::SetTimer(int conn_fd, struct sockaddr_in client_address) {
 void WebServer::CloseTimer(Timer *timer, int sock_fd) {
     timer->CallbackFunction(&users_timer_[sock_fd]);
     if (timer) timer_utils_.timer_list_.DelTimer(timer);
-    LOG_INFO("close fd %d", users_timer_[sock_fd].sock_fd);
+    LOG_INFO("Close fd: %d", users_timer_[sock_fd].sock_fd);
 }
 
 bool WebServer::DealSignal(bool &timeout, bool &stop_server) {
@@ -293,6 +293,7 @@ bool WebServer::DealSignal(bool &timeout, bool &stop_server) {
             switch (signals[i]) {
                 case SIGALRM: {
                     timeout = true;
+                    LOG_INFO("Trigger SIGALRM Signal !");
                     break;
                 }
                 case SIGTERM: {

@@ -46,6 +46,7 @@ public:
     // 调整定时器，任务发生变化时，调整定时器在链表中的位置
     void AdjustTimer(Timer *timer);
     void Tick();
+    int time_slot_;  // 使用头节点的时间
 
 private:
     Timer *head_;  // 头节点

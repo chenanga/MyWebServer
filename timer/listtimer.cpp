@@ -1,6 +1,6 @@
 #include "listtimer.h"
 
-ListTimer::ListTimer() : head_(nullptr), tail_(nullptr) {}
+ListTimer::ListTimer() : head_(nullptr), tail_(nullptr), time_slot_(TIMESLOT) {}
 
 ListTimer::~ListTimer() {
     Timer *node = head_;
@@ -99,13 +99,17 @@ void ListTimer::AddTimerPrivateWay(Timer *timer) {
 // 函数，以处理链表上到期任务。
 void ListTimer::Tick() {
     if (head_ == nullptr) return;
-    LOG_INFO("Client disconnect :");
     time_t cur = time(nullptr);  // 获取当前系统时间
     Timer *tmp = head_;
     // 从头节点开始依次处理每个定时器，直到遇到一个尚未到期的定时器
     while (tmp) {
-        // 定时器都使用绝对时间作为超时值，
-        if (cur < tmp->expire_) break;
+        // 空队列时, 以默认值运行，
+        time_slot_ = TIMESLOT;
+        if (cur < tmp->expire_) {
+            // 使用链表头部作为超时时间, 确保下次进来可以删除
+            time_slot_ = tmp->expire_ - cur;
+            break;
+        }
 
         // 调用定时器的回调函数，以执行定时任务
         tmp->CallbackFunction(tmp->user_data_);
@@ -169,10 +173,10 @@ void TimerUtils::AddSignal(int sig, void(handler)(int), bool restart) {
     assert(sigaction(sig, &sa, nullptr) != -1);
 }
 
-//定时处理任务，重新定时以不断触发SIGALRM信号
+//定时处理任务，使用头节点时间触发SIGALRM信号
 void TimerUtils::TimerHandler() {
     timer_list_.Tick();
-    alarm(time_slot_);
+    alarm(timer_list_.time_slot_);
 }
 
 int *TimerUtils::pipe_fd_ = 0;
