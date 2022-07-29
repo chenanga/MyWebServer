@@ -1,6 +1,6 @@
 
-#ifndef CHENWEB_STATE_CODE_H
-#define CHENWEB_STATE_CODE_H
+#ifndef CHENWEB_HTTP_STATE_CODE_H
+#define CHENWEB_HTTP_STATE_CODE_H
 
 /*
     服务器处理HTTP请求的可能结果，报文解析的结果
@@ -43,4 +43,4 @@ enum CHECK_STATE {
 // 1.读取到一个完整的行 2.行出错 3.行数据尚且不完整
 enum LINE_STATUS { LINE_OK = 0, LINE_BAD, LINE_OPEN };
 
-#endif  // CHENWEB_STATE_CODE_H
+#endif  // CHENWEB_HTTP_STATE_CODE_H

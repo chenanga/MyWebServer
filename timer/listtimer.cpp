@@ -1,5 +1,3 @@
-
-
 #include "listtimer.h"
 
 ListTimer::ListTimer() : head_(nullptr), tail_(nullptr) {}
@@ -20,7 +18,7 @@ void ListTimer::AddTimer(Timer *timer) {
         return;
     }
 
-    //如果新的定时器超时时间小于当前头部结点, 直接将当前定时器结点作为头部结点
+    // 如果新的定时器超时时间小于当前头部结点, 直接将当前定时器结点作为头部结点
     if (timer->expire_ < head_->expire_) {
         timer->next_ = head_;
         head_->prev_ = timer;
@@ -28,7 +26,7 @@ void ListTimer::AddTimer(Timer *timer) {
         return;
     }
 
-    AddTimer(timer, head_);  //否则调用私有成员，调整内部结点
+    AddTimerPrivateWay(timer);  // 否则调用私有成员，调整内部结点
 }
 
 void ListTimer::AdjustTimer(Timer *timer) {
@@ -40,26 +38,26 @@ void ListTimer::AdjustTimer(Timer *timer) {
     // 2. 定时器超时值仍然小于下一个定时器超时值，不调整
     if (tmp == nullptr || (timer->expire_ < tmp->expire_)) return;
 
-    //被调整定时器是链表头结点，将定时器取出，重新插入
+    // 被调整定时器是链表头结点，将定时器取出，重新插入
     if (timer == head_) {
         head_ = head_->next_;
         head_->prev_ = nullptr;
         timer->next_ = nullptr;
-        AddTimer(timer, head_);
+        AddTimerPrivateWay(timer);
     }
 
-    //被调整定时器在内部，将定时器取出，重新插入
+    // 被调整定时器在内部，将定时器取出，重新插入
     else {  // timer != head_
         timer->prev_->next_ = timer->next_;
         timer->next_->prev_ = timer->prev_;
-        AddTimer(timer, timer->next_);
+        AddTimerPrivateWay(timer);
     }
 }
 
 void ListTimer::DelTimer(Timer *timer) {
     if (timer == nullptr) return;
 
-    //链表中只有一个定时器，需要删除该定时器
+    // 链表中只有一个定时器，需要删除该定时器
     if ((timer == head_) && (timer == tail_)) {
         delete timer;
         head_ = nullptr;
@@ -67,7 +65,7 @@ void ListTimer::DelTimer(Timer *timer) {
         return;
     }
 
-    //被删除的定时器为头结点
+    // 被删除的定时器为头结点
     if (timer == head_) {
         head_ = head_->next_;
         head_->prev_ = nullptr;
@@ -75,7 +73,7 @@ void ListTimer::DelTimer(Timer *timer) {
         return;
     }
 
-    //被删除的定时器为尾结点
+    // 被删除的定时器为尾结点
     if (timer == tail_) {
         tail_ = tail_->prev_;
         tail_->next_ = nullptr;
@@ -83,36 +81,18 @@ void ListTimer::DelTimer(Timer *timer) {
         return;
     }
 
-    //被删除的定时器在链表内部，常规链表结点删除
+    // 被删除的定时器在链表内部，常规链表结点删除
     timer->prev_->next_ = timer->next_;
     timer->next_->prev_ = timer->prev_;
     delete timer;
 }
 
-void ListTimer::AddTimer(Timer *timer, Timer *last_head) {
-    Timer *prev = last_head;
-    Timer *tmp = prev->next_;
-
-    //遍历当前结点之后的链表，按照超时时间找到目标定时器对应的位置，常规双向链表插入操作
-    while (tmp) {
-        if (timer->expire_ < tmp->expire_) {
-            prev->next_ = timer;
-            timer->next_ = tmp;
-            tmp->prev_ = timer;
-            timer->prev_ = prev;
-            break;  // 可以直接 return
-        }
-        prev = tmp;
-        tmp = tmp->next_;
-    }
-
-    //遍历完未找到位置，目标定时器需要放到尾结点处
-    if (tmp == nullptr) {
-        prev->next_ = timer;
-        timer->prev_ = prev;
-        timer->next_ = nullptr;
-        tail_ = timer;
-    }
+void ListTimer::AddTimerPrivateWay(Timer *timer) {
+    // 直接尾插, 可以保证新加入的一定是最大的
+    tail_->next_ = timer;
+    timer->prev_ = tail_;
+    timer->next_ = nullptr;
+    tail_ = timer;
 }
 
 // SIGALARM 信号每次被触发就在其信号处理函数中执行一次 Tick()

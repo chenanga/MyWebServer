@@ -1,6 +1,6 @@
 
-#ifndef CHENWEB_HTTP_REQUEST_H
-#define CHENWEB_HTTP_REQUEST_H
+#ifndef CHENWEB_HTTP_HTTP_REQUEST_H
+#define CHENWEB_HTTP_HTTP_REQUEST_H
 
 #include <arpa/inet.h>
 #include <fcntl.h>  // iovec
@@ -67,4 +67,4 @@ private:
     CHECK_STATE check_state_;      // 主状态机当前所处的状态
 };
 
-#endif  // CHENWEB_HTTP_REQUEST_H
+#endif  // CHENWEB_HTTP_HTTP_REQUEST_H

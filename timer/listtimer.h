@@ -1,7 +1,6 @@
 
-
-#ifndef CHENWEB_LISTTIMER_H
-#define CHENWEB_LISTTIMER_H
+#ifndef CHENWEB_TIMER_LISTTIMER_H
+#define CHENWEB_TIMER_LISTTIMER_H
 
 #include <fcntl.h>
 #include <netinet/in.h>
@@ -16,7 +15,7 @@
 #include "../http/http_conn.h"
 #include "../log/log.h"
 
-// 前向声明
+// 定时器类
 class Timer;
 
 // 用户数据结构
@@ -43,16 +42,16 @@ public:
     ~ListTimer();  // 常规销毁链表，删除所有定时器
 
     void AddTimer(Timer *timer);  // 将目标定时器timer添加到链表中
-    void AdjustTimer(
-        Timer *timer);  // 调整定时器，任务发生变化时，调整定时器在链表中的位置
     void DelTimer(Timer *timer);  // 删除目标定时器timer
+    // 调整定时器，任务发生变化时，调整定时器在链表中的位置
+    void AdjustTimer(Timer *timer);
     void Tick();
 
 private:
     Timer *head_;  // 头节点
     Timer *tail_;  // 尾节点
 
-    void AddTimer(Timer *timer, Timer *last_head);
+    void AddTimerPrivateWay(Timer *timer);
 };
 
 class TimerUtils {
@@ -76,4 +75,4 @@ public:
 
 void CallbackFunction(ClientData *user_data);
 
-#endif  // CHENWEB_LISTTIMER_H
+#endif  // CHENWEB_TIMER_LISTTIMER_H

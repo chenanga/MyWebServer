@@ -1,7 +1,5 @@
-
-
-#ifndef CHENWEB_GLOBAL_H
-#define CHENWEB_GLOBAL_H
+#ifndef CHENWEB_GLOBAL_GLOBAL_H
+#define CHENWEB_GLOBAL_GLOBAL_H
 
 #include <iostream>
 
@@ -26,4 +24,4 @@ extern const char *error_500_title;
 extern const char *error_404_form;
 extern const char *error_500_form;
 
-#endif  // CHENWEB_GLOBAL_H
+#endif  // CHENWEB_GLOBAL_GLOBAL_H

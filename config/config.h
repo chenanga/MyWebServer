@@ -1,6 +1,5 @@
-
-#ifndef CHENWEB_CONFIG_H
-#define CHENWEB_CONFIG_H
+#ifndef CHENWEB_CONFIG_CONFIG_H
+#define CHENWEB_CONFIG_CONFIG_H
 
 #include <fstream>
 #include <iostream>
@@ -36,4 +35,4 @@ public:
     std::string sql_database_name_;  // 数据库库名
 };
 
-#endif  // MYWEB_CONFIG_H
+#endif  // CHENWEB_CONFIG_CONFIG_H

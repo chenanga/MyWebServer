@@ -1,6 +1,6 @@
 
-#ifndef CHENWEB_HTTP_RESPONSE_H
-#define CHENWEB_HTTP_RESPONSE_H
+#ifndef CHENWEB_HTTP_HTTP_RESPONSE_H
+#define CHENWEB_HTTP_HTTP_RESPONSE_H
 
 #include <fcntl.h>     // iovec
 #include <sys/mman.h>  // mmap, PROT_READ, MAP_PRIVATE
@@ -43,4 +43,4 @@ private:
     bool AddBlankLine();
 };
 
-#endif  // CHENWEB_HTTP_RESPONSE_H
+#endif  // CHENWEB_HTTP_HTTP_RESPONSE_H

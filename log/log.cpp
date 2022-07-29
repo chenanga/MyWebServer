@@ -157,6 +157,7 @@ void Log::Flush(void) {
 }
 
 void *Log::FlushLogThread(void *args) {
+    (void)args;
     Log::GetInstance()->AsyncWriteLog();
     return nullptr;
 }

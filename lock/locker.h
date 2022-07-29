@@ -1,5 +1,5 @@
-#ifndef LOCKER_H
-#define LOCKER_H
+#ifndef CHENWEB_LOCK_LOCKER_H
+#define CHENWEB_LOCK_LOCKER_H
 
 #include <pthread.h>
 #include <semaphore.h>
@@ -93,4 +93,4 @@ private:
     sem_t sem_;
 };
 
-#endif
+#endif  // CHENWEB_LOCK_LOCKER_H

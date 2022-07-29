@@ -1,6 +1,6 @@
 
-#ifndef CHENWEB_BLOCK_QUEUE_H
-#define CHENWEB_BLOCK_QUEUE_H
+#ifndef CHENWEB_LOG_BLOCK_QUEUE_H
+#define CHENWEB_LOG_BLOCK_QUEUE_H
 
 #include <pthread.h>
 #include <sys/time.h>
@@ -195,4 +195,4 @@ bool BlockQueue<T>::pop(T &item, int ms_timeout) {
  * 当有元素push进队列,相当于生产者生产了一个元素
  * 若当前没有线程等待条件变量,则唤醒无意义
  * */
-#endif  // CHENWEB_BLOCK_QUEUE_H
+#endif  // CHENWEB_LOG_BLOCK_QUEUE_H

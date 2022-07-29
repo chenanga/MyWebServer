@@ -1,5 +1,5 @@
-#ifndef CHENWEB_SQLCONNPOOL_H
-#define CHENWEB_SQLCONNPOOL_H
+#ifndef CHENWEB_POOL_SQLCONNPOOL_H
+#define CHENWEB_POOL_SQLCONNPOOL_H
 
 #include <mysql/mysql.h>
 
@@ -66,4 +66,4 @@ private:
     SqlConnPool *connpool_;
 };
 
-#endif  // CHENWEB_SQLCONNPOOL_H
+#endif  // CHENWEB_POOL_SQLCONNPOOL_H

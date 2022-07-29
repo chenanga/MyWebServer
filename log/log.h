@@ -1,5 +1,5 @@
-#ifndef MYWEB_LOG_H
-#define MYWEB_LOG_H
+#ifndef CHENWEB_LOG_LOG_H
+#define CHENWEB_LOG_LOG_H
 
 #include <pthread.h>
 #include <sys/time.h>
@@ -76,4 +76,4 @@ private:
         LOG_BASE(3, format, ##__VA_ARGS__) \
     } while (0);
 
-#endif  // MYWEB_LOG_H
+#endif  // CHENWEB_LOG_LOG_H

@@ -1,5 +1,5 @@
-#ifndef CHENWEB_POLL_H
-#define CHENWEB_POLL_H
+#ifndef CHENWEB_POOL_THREADPOLL_H
+#define CHENWEB_POOL_THREADPOLL_H
 
 #include <mysql/mysql.h>
 #include <pthread.h>
@@ -35,4 +35,4 @@ private:
     void Run();  // 工作线程运行的函数，不断从工作队列取出任务并执行
 };
 
-#endif
+#endif  // CHENWEB_POOL_THREADPOLL_H

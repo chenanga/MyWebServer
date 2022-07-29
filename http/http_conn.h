@@ -1,6 +1,6 @@
 
-#ifndef CHENWEB_HTTP_CONN_H
-#define CHENWEB_HTTP_CONN_H
+#ifndef CHENWEB_HTTP_HTTP_CONN_H
+#define CHENWEB_HTTP_HTTP_CONN_H
 
 #include <arpa/inet.h>
 #include <fcntl.h>
@@ -72,4 +72,4 @@ private:
     void Unmap();  // 释放内存映射
 };
 
-#endif  // MYWEB_HTTP_CONN_H
+#endif  // CHENWEB_HTTP_HTTP_CONN_H
