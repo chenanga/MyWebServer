@@ -94,7 +94,8 @@ bool HttpConn::Write() {
             if (errno == EAGAIN) {
                 ModifyFd(epoll_fd_, sock_fd_, EPOLLOUT, trigger_mode_);
                 return true;
-            }
+            } else if (errno == EINTR)
+                continue;
             Unmap();
             return false;
         }
