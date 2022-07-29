@@ -25,7 +25,7 @@ jobs:
         dst: gitee/ang-chen
         dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
         dst_token:  ${{ secrets.GITEE_TOKEN }}
-        mappings: '${{ steps.info.outputs.result }}=>myweb'
+        # mappings: '${{ steps.info.outputs.result }}=>myweb'   # 映射
         static_list: '${{ steps.info.outputs.result }}'
         account_type: user
         force_update: true
