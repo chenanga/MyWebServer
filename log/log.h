@@ -1,4 +1,3 @@
-
 #ifndef MYWEB_LOG_H
 #define MYWEB_LOG_H
 
@@ -16,9 +15,8 @@
 
 class Log {
 public:
-    static Log *GetInstance();  // C++11以后,使用局部变量懒汉不用加锁
-    static void *FlushLogThread(
-        void *args);  //异步写日志公有方法，调用私有方法async_write_log
+    static Log *GetInstance();                // C++11局部变量懒汉
+    static void *FlushLogThread(void *args);  // 异步写日志
 
     //可选择的参数有日志文件、日志缓冲区大小、最大行数以及最长日志条队列、日志等级、日志开关
     bool Init(const char *file_name, int log_buf_size = 8192,

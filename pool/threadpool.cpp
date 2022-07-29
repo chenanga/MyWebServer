@@ -2,11 +2,11 @@
 
 template <typename T>
 ThreadPool<T>::ThreadPool(SqlConnPool* conn_pool, int thread_number,
-                          int max_requests)
+                          unsigned int max_requests)
     : thread_number_(thread_number),
       max_requests_(max_requests),
-      stop_(false),
       threads_(nullptr),
+      stop_(false),
       conn_pool_(conn_pool) {
     if ((thread_number <= 0 || max_requests <= 0)) {
         // todo, log输出

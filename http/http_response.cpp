@@ -78,6 +78,7 @@ bool HttpResponse::generate_response(HTTP_CODE read_ret, int &bytes_to_send,
                 AddHeaders(strlen(ok_string));
                 if (!AddContent(ok_string)) return false;
             }
+            break;
 
         default:
             return false;
@@ -103,7 +104,7 @@ bool HttpResponse::AddResponse(const char *format, ...) {
        *write_idx_，格式为format， 数据为arg_list的内容*/
     int len = vsnprintf(write_buf_ + *write_idx_,
                         kWriteBufferSize - 1 - *write_idx_, format, arg_list);
-    //如果写入的数据长度超过缓冲区剩余空间，则报错
+    // 如果写入的数据长度超过缓冲区剩余空间，则报错
     if (len >= (kWriteBufferSize - 1 - *write_idx_)) {
         va_end(arg_list);
         return false;
@@ -119,7 +120,7 @@ bool HttpResponse::AddStatusLine(int status, const char *title) {
 }
 
 // 响应头，这里简化了
-bool HttpResponse::AddHeaders(int content_length) {
+void HttpResponse::AddHeaders(int content_length) {
     AddContentLength(content_length);
     AddContentType();
     AddLinger();

@@ -60,7 +60,7 @@ private:
     char write_buf_[kWriteBufferSize];  // 写缓冲区
     int write_idx_;                     // 写缓冲区中待发送的字节数
     int bytes_to_send_;                 // 将要发送的数据的字节数
-    int bytes_have_send_;               // 已经发送的字节数
+    unsigned int bytes_have_send_;      // 已经发送的字节数
     struct stat file_stat_;             // 目标文件的状态。
     char* file_address_;  // 客户请求的目标文件被mmap到内存中的起始位置
     struct iovec iv_[2];          // 采用writev来执行写操作

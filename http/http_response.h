@@ -37,7 +37,7 @@ private:
     bool AddContent(const char *content);
     bool AddContentType();
     bool AddStatusLine(int status, const char *title);
-    bool AddHeaders(int content_length);
+    void AddHeaders(int content_length);
     bool AddContentLength(int content_length);
     bool AddLinger();
     bool AddBlankLine();

@@ -14,8 +14,8 @@ void InitMysqlResult(SqlConnPool *sql_conn_pool) {
         LOG_ERROR("SELECT error:%s\n", mysql_error(mysql));
 
     MYSQL_RES *result = mysql_store_result(mysql);  // 从表中检索完整的结果集
-    int num_fields = mysql_num_fields(result);  // 返回结果集中的列数
-    MYSQL_FIELD *fields = mysql_fetch_fields(result);  // 返回所有字段结构的数组
+    /* MYSQL_FIELD *fields = mysql_fetch_fields(result);  //
+     * 返回所有字段结构的数组 */
 
     // 从结果集中获取下一行，将对应的用户名和密码，存入map中
     while (MYSQL_ROW row = mysql_fetch_row(result)) {

@@ -156,7 +156,10 @@ void Log::Flush(void) {
     mutex_.unlock();
 }
 
-void *Log::FlushLogThread(void *args) { Log::GetInstance()->AsyncWriteLog(); }
+void *Log::FlushLogThread(void *args) {
+    Log::GetInstance()->AsyncWriteLog();
+    return nullptr;
+}
 
 Log *Log::GetInstance() {
     static Log instance;
@@ -171,4 +174,5 @@ void *Log::AsyncWriteLog() {
         fputs(single_log.c_str(), file_pointer_);
         mutex_.unlock();
     }
+    return nullptr;
 }
