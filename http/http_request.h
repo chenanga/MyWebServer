@@ -35,6 +35,7 @@ public:
     inline bool getLinger() const { return linger_; };
     inline char *getRealFile() { return real_file_; }
     MYSQL *mysql_;
+    inline int getReadIdx() { return read_idx_; };
 
 private:
     inline char *GetLine() { return read_buf_ + start_line_; };

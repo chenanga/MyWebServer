@@ -32,6 +32,7 @@ HttpRequest::~HttpRequest() {}
 void HttpRequest::Init() {
     check_state_ = CHECK_STATE_REQUESTLINE;  // 初始化状态为请求首行
     checked_idx_ = 0;
+    read_idx_ = 0;
     start_line_ = 0;
     url_ = nullptr;
     version_ = nullptr;
@@ -44,12 +45,12 @@ void HttpRequest::Init() {
 
 void HttpRequest::Init(char *read_buf, int read_idx, struct stat *file_stat,
                        char **file_address, sockaddr_in *client_address) {
+    Init();
     read_buf_ = read_buf;
     read_idx_ = read_idx;
     file_stat_ = file_stat;
     file_address_ = file_address;
     client_address_ = client_address;
-    Init();
 }
 
 HTTP_CODE HttpRequest::ParseRequest() {

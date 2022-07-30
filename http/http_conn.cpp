@@ -131,6 +131,7 @@ void HttpConn::Process() {
     // 解析http请求
     http_request_.Init(read_buf_, read_idx_, &file_stat_, &file_address_,
                        getAddress());
+
     HTTP_CODE read_ret = http_request_.ParseRequest();
     if (read_ret == NO_REQUEST) {
         ModifyFd(epoll_fd_, sock_fd_, EPOLLIN, trigger_mode_);
@@ -140,10 +141,11 @@ void HttpConn::Process() {
     // 生成http响应
     http_response_.init(&write_idx_, write_buf_, linger_,
                         http_request_.getRealFile());
-                        
+
     bool write_ret = http_response_.generate_response(
         read_ret, bytes_to_send_, file_stat_, iv_[0], iv_[1], file_address_,
         iv_count_);
+
     if (!write_ret) CloseConn();
     ModifyFd(epoll_fd_, sock_fd_, EPOLLOUT, trigger_mode_);
 }
