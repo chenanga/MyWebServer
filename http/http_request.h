@@ -53,7 +53,7 @@ private:
     char *url_;                     // 请求目标文件的文件名
     char real_file_[kFileNameLen];  // 客户请求的目标文件的完整路径
     char **file_address_;  // 客户请求的目标文件被mmap到内存中的起始位置
-    char *request_data_;  // 储存请求数据部分
+    char *request_data_;  // 储存请求头数据部分
     struct stat *
         file_stat_;  // 目标文件的状态。是否存在、是否为目录、是否可读，并获取文件大小等信息
     int iv_count_;   // 被写内存块的数量

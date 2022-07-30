@@ -67,10 +67,8 @@ bool HttpResponse::generate_response(HTTP_CODE read_ret, int &bytes_to_send,
                 iv_1.iov_base = file_address;  // 指针指向mmap返回的文件指针
                 iv_1.iov_len = file_stat.st_size;  // 长度指向文件大小
                 iv_count = 2;
-                bytes_to_send =
-                    (*write_idx_) +
-                    file_stat
-                        .st_size;  // 发送的全部数据为响应报文头部信息和文件大小
+                // 发送的全部数据为响应报文头部信息和文件大小
+                bytes_to_send = (*write_idx_) + file_stat.st_size;
                 return true;
             } else {
                 // 如果请求资源大小为0，返回空白html文件

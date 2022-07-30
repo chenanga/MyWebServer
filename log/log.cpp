@@ -12,32 +12,32 @@ Log::~Log() {
     }
 }
 
-//异步需要设置阻塞队列的长度，同步不需要设置
+// 异步需要设置阻塞队列的长度，同步不需要设置
 bool Log::Init(const char *file_name, int log_buf_size, int split_lines,
                int max_queue_size, int level) {
-    //如果设置了max_queue_size,则设置为异步
+    // 如果设置了max_queue_size,则设置为异步
     level_ = level;
     log_switch_ = true;
 
     if (max_queue_size >= 1) {
-        is_async_ = true;  //设置写入方式flag
+        is_async_ = true;  // 设置写入方式flag
         log_queue_ = new BlockQueue<std::string>(
-            max_queue_size);  //创建并设置阻塞队列长度
+            max_queue_size);  // 创建并设置阻塞队列长度
         pthread_t tid;
         // FlushLogThread,这里表示创建线程异步写日志
         pthread_create(&tid, nullptr, FlushLogThread, nullptr);
     }
-    //输出内容的长度
+    // 输出内容的长度
     log_buf_size_ = log_buf_size;
     buf_ = new char[log_buf_size_];
     memset(buf_, '\0', log_buf_size_);
-    split_lines_ = split_lines;  //日志的最大行数
+    split_lines_ = split_lines;  // 日志的最大行数
 
     time_t t = time(nullptr);
     struct tm *sys_tm = localtime(&t);
     struct tm my_tm = *sys_tm;
 
-    const char *p = strrchr(file_name, '/');  //从后往前找到第一个/的位置
+    const char *p = strrchr(file_name, '/');  // 从后往前找到第一个/的位置
     char log_full_name[512] = {0};
 
     // 若输入的文件名没有/，则直接将时间+文件名作为日志名
@@ -47,7 +47,7 @@ bool Log::Init(const char *file_name, int log_buf_size, int split_lines,
                  file_name);
     else {
         strcpy(log_name_,
-               p + 1);  //将/的位置向后移动一个位置，然后复制到logname中
+               p + 1);  // 将/的位置向后移动一个位置，然后复制到logname中
         strncpy(
             dir_name_, file_name,
             p - file_name + 1);  // p - file_name + 1是文件所在路径文件夹的长度

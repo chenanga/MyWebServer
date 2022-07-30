@@ -249,6 +249,10 @@ HTTP_CODE HttpRequest::DoRequest() {
     strcpy(real_file_, std::string(kStrCurDir + "/resources").c_str());
     int len = strlen(std::string(kStrCurDir + "/resources").c_str());
     const char *p = strrchr(url_, '/');
+    if (p == nullptr) {
+        perror("strrchr");
+        exit(-1);
+    }
 
     // 处理post请求 且是登录或者注册
     if (is_post_ == 1 && (*(p + 1) == '2' || *(p + 1) == '3')) {
@@ -337,47 +341,39 @@ HTTP_CODE HttpRequest::DoRequest() {
 
     /*     访问端口号或者index.html界面,
          因为默认是访问这个界面，所有放在if第一行，提高命中率，减少if判断次数*/
-    if (*(p + 1) == '4') {
+    if (*(p + 1) == '8') {
+        char *m_url_real = (char *)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/test.html");
+        strncpy(real_file_ + len, m_url_real, strlen(m_url_real));  //拼接路径
+        free(m_url_real);
+    } else if (*(p + 1) == '4') {  // 默认界面
         char *m_url_real = (char *)malloc(sizeof(char) * 200);
         strcpy(m_url_real, "/index.html");
         strncpy(real_file_ + len, m_url_real, strlen(m_url_real));  //拼接路径
         free(m_url_real);
-    }
-
-    // 访问登录界面
-    else if (*(p + 1) == '1') {
+    } else if (*(p + 1) == '1') {  // 访问登录界面
         char *m_url_real = (char *)malloc(sizeof(char) * 200);
         strcpy(m_url_real, "/log.html");
         strncpy(real_file_ + len, m_url_real, strlen(m_url_real));
         free(m_url_real);
-    }
-
-    // 访问注册界面
-    else if (*(p + 1) == '0') {
+    } else if (*(p + 1) == '0') {  // 访问注册界面
         char *m_url_real = (char *)malloc(sizeof(char) * 200);
         strcpy(m_url_real, "/register.html");
         strncpy(real_file_ + len, m_url_real, strlen(m_url_real));  //拼接路径
         free(m_url_real);
-    }
-
-    // 访问图片界面
-    else if (*(p + 1) == '5') {
+    } else if (*(p + 1) == '5') {  // 访问图片界面
         char *m_url_real = (char *)malloc(sizeof(char) * 200);
         strcpy(m_url_real, "/picture.html");
         strncpy(real_file_ + len, m_url_real, strlen(m_url_real));
         free(m_url_real);
-    }
-
-    // 访问视频界面
-    else if (*(p + 1) == '6') {
+    } else if (*(p + 1) == '6') {  // 访问视频界面
         char *m_url_real = (char *)malloc(sizeof(char) * 200);
         strcpy(m_url_real, "/video.html");
         strncpy(real_file_ + len, m_url_real, strlen(m_url_real));
         free(m_url_real);
     }
 
-    // 访问关注界面
-    else if (*(p + 1) == '7') {
+    else if (*(p + 1) == '7') {  // 访问关注界面
         char *m_url_real = (char *)malloc(sizeof(char) * 200);
         strcpy(m_url_real, "/fans.html");
         strncpy(real_file_ + len, m_url_real, strlen(m_url_real));

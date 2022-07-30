@@ -16,7 +16,7 @@ ThreadNum: 8
 # 优雅关闭链接
 # 0，不使用
 # 1，使用
-ElegantCloseLinger: 1
+ElegantCloseLinger: 0
 
 # 并发模型
 # 0，Proactor模型
@@ -27,7 +27,7 @@ ActorModel: 0
 Log:
   # 0，关闭日志
   # 1，打开日志
-  LogIsOpen: 1
+  LogIsOpen: 0
 
   # 0，日志同步写入
   # 1，日志异步写入

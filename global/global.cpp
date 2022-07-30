@@ -3,7 +3,7 @@
 
 std::string kStrCurDir;
 
-//定义http响应的一些状态信息
+// 定义http响应的一些状态信息
 const char *ok_200_title = "OK";
 const char *error_400_title = "Bad Request";
 const char *error_400_form =

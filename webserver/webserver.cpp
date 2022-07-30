@@ -120,53 +120,60 @@ void WebServer::EventListen() {
         exit(-1);
     }
 
-    // 优雅关闭: 直到所剩数据发送完毕或超时
+    struct linger linger_ = {0, 0};
     if (elegant_close_linger_ == 1) {
-        struct linger linger_ = {0, 0};
-        setsockopt(listen_fd_, SOL_SOCKET, SO_LINGER, &linger_,
-                   sizeof(linger_));
-    } else {
-        struct linger linger_ = {1, 1};
-        setsockopt(listen_fd_, SOL_SOCKET, SO_LINGER, &linger_,
-                   sizeof(linger_));
+        // 优雅关闭: 直到所剩数据发送完毕或超时
+        linger_.l_onoff = 1;
+        linger_.l_linger = 1;
     }
-
-    // 绑定
-    struct sockaddr_in address;
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(config_.port_);
-    int reuse = 1;
-    setsockopt(listen_fd_, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
-    int ret = bind(listen_fd_, (struct sockaddr *)&address, sizeof(address));
+    int ret = setsockopt(listen_fd_, SOL_SOCKET, SO_LINGER, &linger_,
+                         sizeof(linger_));
     if (ret == -1) {
-        LOG_ERROR("bindfailure: %s", error);
+        LOG_ERROR("Init linger error : %s", strerror(errno));
         exit(-1);
     }
 
-    // 监听
-    ret = listen(listen_fd_, 6);
+    struct sockaddr_in address;
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = htonl(INADDR_ANY);
+    address.sin_port = htons(port_);
+    int reuse = 1;  // 端口复用
+    ret =
+        setsockopt(listen_fd_, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
     if (ret == -1) {
-        LOG_ERROR("listen failure: %s", error);
+        LOG_ERROR("set socket setsockopt error: %s", strerror(errno));
+        exit(-1);
+    }
+    // 绑定
+    ret = bind(listen_fd_, (struct sockaddr *)&address, sizeof(address));
+    if (ret == -1) {
+        LOG_ERROR("bindfailure: %s", strerror(errno));
+        exit(-1);
+    }
+    // 监听
+    ret = listen(listen_fd_, 5);
+    if (ret == -1) {
+        LOG_ERROR("listen failure: %s", strerror(errno));
         exit(-1);
     }
 
     // 创建epoll对象
+    epoll_event events_[MAX_EVENT_NUMBER];
     epoll_fd_ = epoll_create(5);
     if (epoll_fd_ == -1) {
-        LOG_ERROR("epoll_create failure: %s", error);
+        LOG_ERROR("epoll_create failure: %s", strerror(errno));
         exit(-1);
     }
     // 将监听的文件描述符添加到epoll对象中
     AddFd(epoll_fd_, listen_fd_, false, listen_fd_trigger_mode_);
     HttpConn::epoll_fd_ = epoll_fd_;
 
+    // 定时器管道初始化
     ret = socketpair(PF_UNIX, SOCK_STREAM, 0, pipe_fd_);
     if (ret == -1) {
-        LOG_ERROR("socketpair failure: %s", error);
+        LOG_ERROR("socketpair failure: %s", strerror(errno));
         exit(-1);
     }
-
     timer_utils_.Init(TIMESLOT);
     timer_utils_.SetNonBlocking(pipe_fd_[1]);
     timer_utils_.AddFd(epoll_fd_, pipe_fd_[0], false, 0);
@@ -188,7 +195,6 @@ void WebServer::Start() {
             LOG_ERROR("epoll_wait failure: %s", error);
             break;
         }
-
         for (int i = 0; i < num; ++i) {
             int sock_fd = events_[i].data.fd;
             if (sock_fd == listen_fd_) {
@@ -221,7 +227,7 @@ bool WebServer::DealClientConn() {
         int conn_fd = accept(listen_fd_, (struct sockaddr *)&client_address,
                              &client_address_len);
         if (conn_fd < 0) {
-            LOG_WARN("errno is: %d", errno);
+            LOG_WARN("errno is: %s", strerror(errno));
             return false;
         }
         if (HttpConn::user_count_ >= MAX_FD) {
@@ -234,7 +240,7 @@ bool WebServer::DealClientConn() {
             int conn_fd = accept(listen_fd_, (struct sockaddr *)&client_address,
                                  &client_address_len);
             if (conn_fd < 0) {
-                LOG_WARN("errno is: %d", errno);
+                LOG_WARN("errno is: %s", strerror(errno));
                 break;
             }
             if (HttpConn::user_count_ >= MAX_FD) {
@@ -263,17 +269,17 @@ void WebServer::SetTimer(int conn_fd, struct sockaddr_in client_address) {
     users_timer_[conn_fd].address = client_address;
     users_timer_[conn_fd].sock_fd = conn_fd;
 
-    Timer *timer = new Timer;  //创建定时器临时变量
-    //设置定时器对应的连接资源
+    Timer *timer = new Timer;  // 创建定时器临时变量
+    // 设置定时器对应的连接资源
     timer->user_data_ = &users_timer_[conn_fd];
-    timer->CallbackFunction = CallbackFunction;  //设置回调函数
+    timer->CallbackFunction = CallbackFunction;  // 设置回调函数
 
     time_t cur = time(nullptr);
-    //设置绝对超时时间, 为3倍的TIMESLOT
+    // 设置绝对超时时间, 为3倍的TIMESLOT
     timer->expire_ = cur + 3 * TIMESLOT;
     users_timer_[conn_fd].timer =
-        timer;  //创建该连接对应的定时器，初始化为前述临时变量
-    timer_utils_.timer_list_.AddTimer(timer);  //将该定时器添加到链表中
+        timer;  // 创建该连接对应的定时器，初始化为前述临时变量
+    timer_utils_.timer_list_.AddTimer(timer);  // 将该定时器添加到链表中
 }
 
 void WebServer::CloseTimer(Timer *timer, int sock_fd) {
