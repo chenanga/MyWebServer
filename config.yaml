@@ -11,7 +11,7 @@ Port: 10000
 TriggerMode: 3
 
 # 线程池内的线程数量
-ThreadNum: 6
+ThreadNum: 8
 
 # 优雅关闭链接
 # 0，不使用

@@ -164,6 +164,7 @@ bool HttpResponse::AddContent(const char *content) {
 }
 
 bool HttpResponse::AddContentType() {
+    // return AddResponse("Content-Type:%s\r\n", "text/html");
     return AddResponse("Content-Type:%s\r\n", GetFileType().c_str());
 }
 
