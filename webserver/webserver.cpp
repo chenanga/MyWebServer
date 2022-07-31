@@ -158,7 +158,7 @@ void WebServer::EventListen() {
     }
 
     // 创建epoll对象
-    epoll_event events_[MAX_EVENT_NUMBER];
+    // epoll_event events_[MAX_EVENT_NUMBER];
     epoll_fd_ = epoll_create(5);
     if (epoll_fd_ == -1) {
         LOG_ERROR("epoll_create failure: %s", strerror(errno));

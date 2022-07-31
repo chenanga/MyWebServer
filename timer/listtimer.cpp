@@ -1,6 +1,6 @@
 #include "listtimer.h"
 
-ListTimer::ListTimer() : head_(nullptr), tail_(nullptr), time_slot_(TIMESLOT) {}
+ListTimer::ListTimer() : time_slot_(TIMESLOT), head_(nullptr), tail_(nullptr) {}
 
 ListTimer::~ListTimer() {
     Timer *node = head_;

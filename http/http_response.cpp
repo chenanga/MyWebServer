@@ -4,6 +4,29 @@ HttpResponse::HttpResponse() {}
 
 HttpResponse::~HttpResponse() {}
 
+const std::unordered_map<std::string, std::string> HttpResponse::SUFFIX_TYPE = {
+    {".html", "text/html"},
+    {".xml", "text/xml"},
+    {".xhtml", "application/xhtml+xml"},
+    {".txt", "text/plain"},
+    {".rtf", "application/rtf"},
+    {".pdf", "application/pdf"},
+    {".word", "application/nsword"},
+    {".png", "image/png"},
+    {".gif", "image/gif"},
+    {".jpg", "image/jpeg"},
+    {".jpeg", "image/jpeg"},
+    {".au", "audio/basic"},
+    {".mpeg", "video/mpeg"},
+    {".mpg", "video/mpeg"},
+    {".avi", "video/x-msvideo"},
+    {".gz", "application/x-gzip"},
+    {".tar", "application/x-tar"},
+    {".css", "text/css "},
+    {".js", "text/javascript "},
+    {".mp4", "video/mpeg4"},
+};
+
 void HttpResponse::init(int *write_idx, char *write_buf, bool linger,
                         char *real_file) {
     write_buf_ = write_buf;
@@ -141,5 +164,19 @@ bool HttpResponse::AddContent(const char *content) {
 }
 
 bool HttpResponse::AddContentType() {
-    return AddResponse("Content-Type:%s\r\n", "text/html");
+    return AddResponse("Content-Type:%s\r\n", GetFileType().c_str());
+}
+
+std::string HttpResponse::GetFileType() {
+    /* 判断文件类型 */
+    std::string real_file = real_file_;
+    std::string::size_type idx = real_file.find_last_of('.');
+    if (idx == std::string::npos) {
+        return "text/plain";
+    }
+    std::string suffix = real_file.substr(idx);
+    if (SUFFIX_TYPE.count(suffix) == 1) {
+        return SUFFIX_TYPE.find(suffix)->second;
+    }
+    return "text/plain";
 }

@@ -10,6 +10,7 @@
 #include <cstdarg>
 #include <cstring>
 #include <string>
+#include <unordered_map>
 
 #include "../global/global.h"
 #include "../log/log.h"
@@ -41,6 +42,8 @@ private:
     bool AddContentLength(int content_length);
     bool AddLinger();
     bool AddBlankLine();
+    static const std::unordered_map<std::string, std::string> SUFFIX_TYPE;
+    std::string GetFileType();
 };
 
 #endif  // CHENWEB_HTTP_HTTP_RESPONSE_H
