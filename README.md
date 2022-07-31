@@ -43,8 +43,8 @@ create database webserver;
 # 创建user表
 USE webserver;
 CREATE TABLE user(
-    username char(50) nullptr,
-    password char(50) nullptr
+    username char(50) NULL,
+    password char(50) NULL
 )ENGINE=InnoDB;
 
 # 添加数据
@@ -69,7 +69,7 @@ databaseParameter:
 ```
 
 ### 服务器端代码编译构建 （以下方式选其一即可）
-#### 方式1： CMake编译构建 (推荐)
+#### 方式1： CMake编译构建 (推荐ubuntu使用)
 **环境：**
 - cmake >= 3.20
 - gcc
@@ -86,7 +86,7 @@ sh ./build.sh
 ```
 
 
-#### 方式2：makefile编译构建
+#### 方式2：makefile编译构建(推荐centos使用)
 **环境：**
 - cmake >= 3.20
 - gcc
@@ -107,7 +107,7 @@ sudo make install
 ```c++
 // chenWeb 配置
 cd 当前目录
-make
+sh ./build-centos.sh
 ```
 3. 运行
 ```c++
@@ -143,7 +143,30 @@ chenWeb/
 |-- README.md
 ```
 
-## 测试
+## 压力测试
+### 测试环境：ubuntu18,
+### 虚拟机配置：
+
+![](asset/images/vmConfiguration.JPG)
+
+### 测试方式：模拟Proactor模式，关闭日志后，使用Webbench对服务器进行压力测试，对listen_fd和client_fd分别采用LT和ET模式，均可实现12000+的并发。
+
+- listen_fd: LT, client_fd: LT, QPS: 37133
+
+![](asset/images/12000_LT_LT.JPG)
+
+- listen_fd: ET, client_fd: LT, QPS: 41639
+
+![](asset/images/12000_ET_LT.JPG)
+
+- listen_fd: LT, client_fd: ET, QPS: 35646
+
+![](asset/images/12000_LT_ET.JPG)
+
+- listen_fd: ET, client_fd: ET, QPS: 44153
+
+![](asset/images/12000_ET_ET.JPG)
+
 
 ## TODO
 1、http解析使用正则表达式
