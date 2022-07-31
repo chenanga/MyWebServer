@@ -4,10 +4,10 @@
 std::map<std::string, std::string> g_users;
 Locker g_lock_map;  // 多线程操作时候使用
 
-void InitMysqlResult(SqlConnPool *sql_conn_pool) {
+void InitMysqlResult() {
     // 先从连接池中取一个连接
     MYSQL *mysql = nullptr;
-    SqlConnRAII mysql_coon(&mysql, sql_conn_pool);
+    SqlConnRAII mysql_coon(&mysql, SqlConnPool::GetInstance());
 
     // 在user表中检索username，passwd数据，浏览器端输入
     if (mysql_query(mysql, "SELECT username,password FROM user"))
@@ -23,6 +23,8 @@ void InitMysqlResult(SqlConnPool *sql_conn_pool) {
         std::string temp2(row[1]);
         g_users[temp1] = temp2;
     }
+    mysql_free_result(result);
+    SqlConnPool::GetInstance()->ReleaseConnection(mysql);
 }
 
 HttpRequest::HttpRequest() { Init(); }
@@ -290,6 +292,7 @@ HTTP_CODE HttpRequest::DoRequest() {
                 // 当有用户注册时候，再去取链接
                 SqlConnRAII mysql_coon(&mysql_, SqlConnPool::GetInstance());
                 int res = mysql_query(mysql_, sql_insert);
+                free(sql_insert);
                 g_lock_map.unlock();
 
                 if (!res) {

@@ -21,7 +21,7 @@
 #include "../pool/sqlconnpool.h"
 #include "state_code.h"
 
-void InitMysqlResult(SqlConnPool *sql_conn_pool);
+void InitMysqlResult();
 
 class HttpRequest {
 public:

@@ -67,7 +67,7 @@ void WebServer::SqlInit() {
     sql_conn_pool_ = SqlConnPool::GetInstance();
     sql_conn_pool_->init(sql_host_, sql_user_, sql_password_,
                          sql_database_name_, sql_port_, sql_thread_num_);
-    InitMysqlResult(sql_conn_pool_);
+    InitMysqlResult();
 }
 
 void WebServer::LogInit() {
