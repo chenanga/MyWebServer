@@ -28,7 +28,8 @@ int Config::LoadConfig(const std::string &config_filename) {
         return -1;
     }
 
-    port_ = config["Port"].as<int>();                 // 端口号
+    port_ = config["Port"].as<int>();  // 端口号
+    // max_requests_ = config["MaxRequests"].as<int>();  // 任务请求队列最大数量
     trigger_mode_ = config["TriggerMode"].as<int>();  // 触发组合模式
     thread_num_ = config["ThreadNum"].as<int>();  // 线程池内的线程数量
     elegant_close_linger_ =

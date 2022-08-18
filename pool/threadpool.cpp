@@ -1,15 +1,13 @@
 #include "threadpool.h"
 
 template <typename T>
-ThreadPool<T>::ThreadPool(SqlConnPool* conn_pool, int thread_number,
-                          unsigned int max_requests)
+ThreadPool<T>::ThreadPool(int thread_number, unsigned int max_requests)
     : thread_number_(thread_number),
       max_requests_(max_requests),
       threads_(nullptr),
-      stop_(false),
-      conn_pool_(conn_pool) {
+      stop_(false) {
     if ((thread_number <= 0 || max_requests <= 0)) {
-        // todo, log输出
+        LOG_ERROR("thread_number <= 0 || max_requests <= 0");
         throw std::exception();
     }
 

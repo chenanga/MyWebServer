@@ -11,7 +11,10 @@ Port: 10000
 TriggerMode: 3
 
 # 线程池内的线程数量
-ThreadNum: 8
+ThreadNum: 10
+
+# 任务请求队列最大数量
+MaxRequests: 10000
 
 # 优雅关闭链接
 # 0，不使用

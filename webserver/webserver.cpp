@@ -34,6 +34,7 @@ WebServer::~WebServer() {
 
 void WebServer::Init() {
     port_ = config_.port_;
+    thread_num_ = config_.thread_num_;
     trigger_mode_ = config_.trigger_mode_;
     actor_model_ = config_.actor_model_;
     elegant_close_linger_ = config_.elegant_close_linger_;
@@ -108,7 +109,7 @@ void WebServer::SetTriggerMode() {
 
 void WebServer::EventListen() {
     try {
-        thread_pool_ = new ThreadPool<HttpConn>(sql_conn_pool_);
+        thread_pool_ = new ThreadPool<HttpConn>(thread_num_, MAX_EVENT_NUMBER);
     } catch (...) {
         LOG_ERROR("thread_pool_ init failure !");
         exit(-1);
@@ -158,7 +159,6 @@ void WebServer::EventListen() {
     }
 
     // 创建epoll对象
-    // epoll_event events_[MAX_EVENT_NUMBER];
     epoll_fd_ = epoll_create(5);
     if (epoll_fd_ == -1) {
         LOG_ERROR("epoll_create failure: %s", strerror(errno));

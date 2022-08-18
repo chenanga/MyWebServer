@@ -17,6 +17,7 @@ public:
 
     int port_;                  // 端口号
     int thread_num_;            // 线程池内的线程数量
+    int max_requests_;          // 任务请求队列最大数量
     int actor_model_;           // 并发模型选择
     int trigger_mode_;          // 触发组合模式
     int elegant_close_linger_;  // 优雅关闭链接

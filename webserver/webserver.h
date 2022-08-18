@@ -33,13 +33,14 @@ public:
     void Start();
 
 private:
-    int port_;
+    int port_;        // 端口
+    int thread_num_;  // 线程池中线程数
     int epoll_fd_;
     int listen_fd_;
-    int trigger_mode_;
-    int listen_fd_trigger_mode_;
-    int client_fd_trigger_mode_;
-    int elegant_close_linger_;  // 优雅关闭链接
+    int trigger_mode_;            // 触发模式
+    int listen_fd_trigger_mode_;  // listen触发模式
+    int client_fd_trigger_mode_;  // client触发模式
+    int elegant_close_linger_;    // 优雅关闭链接
     Config config_;
     int actor_model_;                    // 并发模型选择
     ThreadPool<HttpConn> *thread_pool_;  //线程池
